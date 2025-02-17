@@ -1,0 +1,80 @@
+@import 'tailwindcss';
+
+:root {
+  --background: white;
+  --foreground: var(--color-neutral-950);
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --default-font-family: "Golos Text", serif;
+  --default-ring-width: 1px;
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-neutral-400, currentColor);
+  }
+
+  h1 {
+    @apply text-4xl;
+    @apply font-medium;
+  }
+  h2 {
+    @apply text-3xl;
+    @apply font-medium;
+  }
+  h3 {
+    @apply text-2xl;
+  }
+  h4 {
+    @apply text-xl;
+  }
+  h5 {
+    @apply text-lg;
+  }
+  a {
+    @apply text-base;
+  }
+  small {
+    @apply text-sm;
+  }
+
+  input, textarea {
+    color: var(--color-neutral-950);
+    width: 100%;
+  }
+
+  select:invalid {
+    color: var(--color-neutral-500);
+  }
+
+  select > option {
+    color: var(--color-neutral-950);
+  }
+
+  select option[value=""], select option:not([value]) {
+    color: var(--color-neutral-500);
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-neutral-500);
+    font-size: 16px;
+  }
+}
