@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 :root {
   --background: white;
@@ -24,34 +24,33 @@ body {
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-neutral-400, currentColor);
+    border-color: var(--color-neutral-300, currentColor);
   }
 
   h1 {
-    @apply text-4xl;
-    @apply font-medium;
+    @apply text-4xl font-medium max-md:text-2xl md:max-xl:text-3xl;
   }
   h2 {
-    @apply text-3xl;
-    @apply font-medium;
+    @apply text-3xl font-medium max-md:text-xl md:max-xl:text-2xl;
   }
   h3 {
-    @apply text-2xl;
+    @apply text-2xl max-md:text-lg md:max-xl:text-xl;
   }
   h4 {
-    @apply text-xl;
+    @apply text-xl max-md:text-base md:max-xl:text-lg;
   }
   h5 {
-    @apply text-lg;
+    @apply text-lg max-md:text-base md:max-xl:text-base;
   }
   a {
-    @apply text-base;
+    @apply text-base max-md:text-sm md:max-xl:text-sm;
   }
   small {
-    @apply text-sm;
+    @apply text-sm max-md:text-xs md:max-xl:text-xs;
   }
 
-  input, textarea {
+  input,
+  textarea {
     color: var(--color-neutral-950);
     width: 100%;
   }
@@ -64,7 +63,8 @@ body {
     color: var(--color-neutral-950);
   }
 
-  select option[value=""], select option:not([value]) {
+  select option[value=""],
+  select option:not([value]) {
     color: var(--color-neutral-500);
   }
 

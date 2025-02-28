@@ -18,11 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body
-        className={`${fontSans.className} antialiased`}
-      >
-        {children}
-      </body>
+      <body className={`${fontSans.className} antialiased`}>{children}</body>
     </html>
   );
 }

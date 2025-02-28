@@ -4,11 +4,11 @@ services:
     restart: always
     container_name: kontact-pgsql
     environment:
-      POSTGRES_DB: '${DB_NAME}'
-      POSTGRES_USER: '${DB_USER}'
-      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
     ports:
-      - '${DB_PORT}:5432'
+      - "${DB_PORT}:5432"
     volumes:
       - pgsql:/var/lib/postgresql/data
 
@@ -17,7 +17,7 @@ services:
     restart: always
     container_name: kontact-redis
     ports:
-      - '${REDIS_PORT}:6379'
+      - "${REDIS_PORT}:6379"
     volumes:
       - redis:/data
 
