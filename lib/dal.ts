@@ -86,3 +86,13 @@ export const getUser = cache(async () => {
     return user;
   }
 });
+
+export const getDepartments = cache(async () => {
+  const departments = await prisma.department.findMany();
+  return departments
+})
+
+export const getPositions = cache(async () => {
+  const positions = await prisma.position.findMany();
+  return positions
+})

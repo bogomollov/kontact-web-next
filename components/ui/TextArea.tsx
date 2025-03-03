@@ -17,6 +17,7 @@ export default function TextArea({ id, name, className, placeholder, minLength, 
             required={required}
             defaultValue={defaultValue}
             onChange={onChange}
+            {...props}
         />
     );
 }

@@ -6,7 +6,7 @@ export default function ChatHeader({ user }: { user: any }) {
         <div className="flex items-center justify-between px-[20px] py-[20px] gap-[20px] border-b border-b-neutral-200">
             <div className="flex items-center justify-center gap-[15px]">
                 <div className="relative">
-                    <Image src={`/avatars/${user.id}.svg`} alt={"avatar"} width={55} height={55} />
+                    <Image src={`/avatars/${user.id}.png`} alt={"avatar"} width={55} height={55} />
                     <div className="absolute bottom-1 right-1 rounded-full border border-white bg-blue-500 w-[12px] h-[12px]"></div>
                 </div>
                 <div className="flex flex-col">

@@ -14,6 +14,7 @@ export default function Input({ id, name, type, className, placeholder, required
             required={required}
             defaultValue={defaultValue}
             onChange={onChange}
+            {...props}
         />
     );
 }

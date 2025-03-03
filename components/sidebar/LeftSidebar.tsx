@@ -61,7 +61,7 @@ export function LeftSidebar({ authUser, authAccount, allchats }: { authUser: Use
                     <div className="flex items-center justify-between gap-[20px] px-[20px] pt-[20px]">
                         <div className="flex items-center justify-center gap-[15px]">
                             <div className="relative">
-                                <Image src={"/avatars/" + authUser?.id + ".svg"} alt={`avatar ${authUser.id}`} width={55} height={55} className="rounded-full" />
+                                <Image src={"/avatars/" + authUser?.id + ".png"} alt={`avatar ${authUser.id}`} width={55} height={55} className="rounded-full" />
                                 <div className="absolute bottom-1 right-1 rounded-full border border-white bg-blue-500 w-[12px] h-[12px]"></div>
                             </div>
                             <div className="flex flex-col">
@@ -165,7 +165,7 @@ export function LeftSidebar({ authUser, authAccount, allchats }: { authUser: Use
                             ) : chats.length > 0 ? (
                                 chats.map((chat) => (
                                     <Link href={`/dashboard/${chat.members[0].user.id}`} key={chat.id} className={`flex items-center px-[20px] py-[8px] gap-[20px] rounded-[10px] ${pathname == `/dashboard/${chat.id}` ? "bg-neutral-100" : "hover:bg-neutral-50" }`}>
-                                        <Image src={`/avatars/${chat.members[0].user.id}.svg`} width={50} height={50} alt="" />
+                                        <Image src={`/avatars/${chat.members[0].user.id}.png`} width={55} height={55} alt="" />
                                         <h5>{chat.members[0].user.firstName} {chat.members[0].user.lastName}</h5>
                                     </Link>
                                 ))

@@ -9,6 +9,6 @@ interface InputErrorProps extends InputHTMLAttributes<HTMLInputElement> {
 export default function InputError({ className, message, ...props }: InputErrorProps) {
     if (!message) return undefined;
     return (
-        <small className={"text-red-500 " + className}>{message}</small>
+        <small className={"text-red-500 " + className} {...props}>{message}</small>
     );
 }

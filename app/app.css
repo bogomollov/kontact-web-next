@@ -55,8 +55,9 @@ body {
     width: 100%;
   }
 
-  select:invalid {
+  input:disabled, input:read-only, select:invalid, select:disabled {
     color: var(--color-neutral-500);
+    background-color: var(--color-neutral-100);
   }
 
   select > option {

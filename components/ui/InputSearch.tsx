@@ -46,6 +46,7 @@ export default function InputSearch({ id, name, className, placeholder, searchUr
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={placeholder || "Введите запрос..."}
                 required
+                {...props}
             />
         </div>
     );
