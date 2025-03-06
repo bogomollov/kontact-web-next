@@ -1,8 +1,6 @@
-import "server-only";
+"use server";
 import { cache } from "react";
-
 import { prisma } from "@/prisma/client";
-import { createClient } from "redis";
 import { verifySession } from "@/lib/dal";
 
 // const redis = await createClient()
@@ -47,7 +45,11 @@ export const getOrCreateChat = cache(async (findId: number) => {
       },
     },
     include: {
-      members: true,
+      members: {
+        include: {
+          user: { select: { id: true, firstName: true, lastName: true } },
+        },
+      },
       messages: {
         orderBy: { createdAt: "asc" },
         include: {
@@ -64,34 +66,22 @@ export const getOrCreateChat = cache(async (findId: number) => {
         members: {
           connectOrCreate: [
             {
-              where: {
-                chat_id_user_id: {
-                  chat_id: 1,
-                  user_id: Number(user_id),
-                },
-              },
-              create: {
-                user_id: Number(user_id),
-                role_id: 1,
-              },
+              where: { chat_id_user_id: { chat_id: 1, user_id: Number(user_id) } },
+              create: { user_id: Number(user_id), role_id: 1 },
             },
             {
-              where: {
-                chat_id_user_id: {
-                  chat_id: 1,
-                  user_id: findId,
-                },
-              },
-              create: {
-                user_id: findId,
-                role_id: 1,
-              },
+              where: { chat_id_user_id: { chat_id: 1, user_id: findId } },
+              create: { user_id: findId, role_id: 1 },
             },
           ],
         },
       },
       include: {
-        members: true,
+        members: {
+          include: {
+            user: { select: { id: true, firstName: true, lastName: true } },
+          },
+        },
         messages: {
           orderBy: { createdAt: "asc" },
           include: {
@@ -103,6 +93,38 @@ export const getOrCreateChat = cache(async (findId: number) => {
   }
 
   return chat;
+});
+
+export const sendMessage = cache(async (chat_id: number, message: string) => {
+  const { user_id } = await verifySession();
+
+  if (!user_id || !chat_id || !message) {
+    throw new Error("Недостаточно данных для отправки сообщения");
+  }
+
+  const chat = await prisma.chat.findUnique({
+    where: { id: chat_id },
+  });
+
+  if (!chat) {
+    throw new Error(`Чат с ID ${chat_id} не найден`);
+  }
+
+  const isMember = await prisma.chatMember.findUnique({
+    where: { chat_id_user_id: { chat_id, user_id: Number(user_id) } },
+  });
+
+  if (!isMember) {
+    throw new Error("Вы не состоите в этом чате");
+  }
+
+  await prisma.message.create({
+    data: {
+      chat_id,
+      sender_id: Number(user_id),
+      content: message.trim(),
+    },
+  });
 });
 
 // const [id, firstName, lastName, middleName, department_id, position_id] = await redis.hmGet(`user:${findId}`, ['id', 'firstName', 'lastName', 'department_id', 'position_id']);

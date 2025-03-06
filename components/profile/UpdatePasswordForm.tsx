@@ -11,7 +11,7 @@ export default function UpdatePasswordForm({ account }: { account: number }) {
     const [state, action, pending] = useActionState(updatePassword, undefined);
 
     return (
-        <form action={action} className="flex flex-col gap-3 bg-white p-6 rounded-lg">
+        <form action={action} className="flex flex-col gap-3 bg-white p-6 rounded-lg border border-neutral-200">
             <h4 className="font-medium">Изменить пароль</h4>
             <p className="text-neutral-500">Используйте длинный пароль</p>
             <input type="hidden" name="account_id" value={account} />

@@ -13,7 +13,7 @@ export default function UpdateUserAccount({ user, account, department, position 
   const [preview, setAvatarUrl] = useState<string>(`/avatars/${account.id}.png`);
 
   return (
-    <form action={action} className="flex flex-col gap-3 bg-white p-6 rounded-lg">
+    <form action={action} className="flex flex-col gap-3 bg-white p-6 rounded-lg border border-neutral-200">
       <div className="flex flex-col gap-[8px]">
         <h4 className="font-medium">Информация профиля</h4>
         <p className="text-neutral-500">Обновите сведения своего профиля</p>

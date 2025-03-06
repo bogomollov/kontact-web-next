@@ -1,16 +1,17 @@
-import { User } from "@prisma/client";
 import Image from "next/image";
 
-export default function ChatHeader({ user }: { user: any }) {
+export default function ChatHeader({ chat, authUser }: { chat: any; authUser: number }) {
+    const companion = chat.members.find((member: any) => member.user_id !== authUser);
+
     return (
         <div className="flex items-center justify-between px-[20px] py-[20px] gap-[20px] border-b border-b-neutral-200">
             <div className="flex items-center justify-center gap-[15px]">
                 <div className="relative">
-                    <Image src={`/avatars/${user.id}.png`} alt={"avatar"} width={55} height={55} />
+                    <Image src={`/avatars/${companion.user.id}.png`} alt={"avatar"} width={55} height={55} />
                     <div className="absolute bottom-1 right-1 rounded-full border border-white bg-blue-500 w-[12px] h-[12px]"></div>
                 </div>
                 <div className="flex flex-col">
-                    <h4>{user.firstName} {user.lastName}</h4>
+                    <h4>{companion.user.firstName} {companion.user.lastName}</h4>
                     <p className="text-base text-neutral-500">в сети</p>
                 </div>
             </div>

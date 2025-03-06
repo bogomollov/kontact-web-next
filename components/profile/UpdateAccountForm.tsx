@@ -12,7 +12,7 @@ export default function UpdateAccountForm({ account }: { account: Account }) {
   const [state, action, pending] = useActionState(updateAccount, undefined);
 
   return (
-    <form action={action} className="flex flex-col gap-3 bg-white p-6 rounded-lg">
+    <form action={action} className="flex flex-col gap-3 bg-white p-6 rounded-lg border border-neutral-200">
       <h4 className="font-medium">Данные аккаунта</h4>
       <p className="text-neutral-500">Измените данные своего аккаунта</p>
       <input type="hidden" name="account_id" value={account.id} />

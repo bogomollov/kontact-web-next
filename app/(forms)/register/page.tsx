@@ -101,7 +101,7 @@ export default function RegisterForm() {
           </button>
         </form>
         <div className="flex flex-col gap-[20px] w-full">
-          <div className="flex w-full items-center justify-between gap-2">
+          <div className="flex w-full items-center justify-between gap-4">
             <hr className="w-full h-px bg-neutral-300 border-0"></hr>
             <small className="text-neutral-500">ИЛИ</small>
             <hr className="w-full h-px bg-neutral-300 border-0"></hr>

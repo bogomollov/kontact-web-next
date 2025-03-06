@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import InputSearch from "../ui/InputSearch";
 import { Account, ChatType, User } from "@prisma/client";
 import Link from "next/link";
@@ -41,7 +41,7 @@ type FindData = {
     };
 };
 
-export function LeftSidebar({ authUser, authAccount, allchats }: { authUser: UserWithoutTimetamps, authAccount: AccountWithoutPassword, allchats: ChatListItem[]}) {
+export function LeftSidebar({ authUser, authAccount, allchats }: { authUser: UserWithoutTimetamps, authAccount: AccountWithoutPassword, allchats: ChatListItem[] }) {
     const pathname = usePathname();
 
     const [chats, setChats] = useState<ChatListItem[]>(allchats);
@@ -49,9 +49,14 @@ export function LeftSidebar({ authUser, authAccount, allchats }: { authUser: Use
     const [searchResults, setSearchResults] = useState<FindData[] | null>(null);
     const [isSearching, setSearching] = useState(false);
 
-    const handleSearchResults = (data: any) => {
-        setSearchResults(data.data || []);
-        setSearching(data.length > 0);
+    const handleSearchResults = (data: { data: FindData[] }) => {
+        if (data?.data) {
+            setSearchResults(data.data);
+            setSearching(data.data.length > 0);
+        } else {
+            setSearchResults([]);
+            setSearching(false);
+        }
     };
 
     return (
@@ -61,7 +66,7 @@ export function LeftSidebar({ authUser, authAccount, allchats }: { authUser: Use
                     <div className="flex items-center justify-between gap-[20px] px-[20px] pt-[20px]">
                         <div className="flex items-center justify-center gap-[15px]">
                             <div className="relative">
-                                <Image src={"/avatars/" + authUser?.id + ".png"} alt={`avatar ${authUser.id}`} width={55} height={55} className="rounded-full" />
+                                <Image src={"/avatars/" + authUser?.id + ".png"} alt={`avatar ${authUser.id}`} width={55} height={55} className="border rounded-full" />
                                 <div className="absolute bottom-1 right-1 rounded-full border border-white bg-blue-500 w-[12px] h-[12px]"></div>
                             </div>
                             <div className="flex flex-col">
@@ -144,13 +149,16 @@ export function LeftSidebar({ authUser, authAccount, allchats }: { authUser: Use
                 </div>
                 <div className="flex flex-col px-[20px] gap-[8px]">
                     {isSearching ? (
-                        <div className="px-[20px]">
+                        <div>
                             {searchResults && searchResults.length > 0 ? (
                                 searchResults.map((user) => (
-                                    <div key={user.id} className="p-2 border-b">
-                                        <Link href={`/dashboard/${user.id}`}>
-                                            <h5>{user.user.firstName} {user.user.lastName}</h5>
-                                            <p className="text-sm text-neutral-500">@{user.username}</p>
+                                    <div key={user.id}>
+                                        <Link href={`/dashboard/${user.id}`} className={`flex items-center px-[20px] py-[8px] gap-[20px] rounded-[10px] hover:bg-neutral-50`}>
+                                            <Image src={`/avatars/${user.id}.png`} width={55} height={55} alt="" className="border rounded-full" />
+                                            <div className="flex flex-col gap-[5px]">
+                                                <h5>{user.user.firstName} {user.user.lastName}</h5>
+                                                <p className="text-sm text-neutral-500">@{user.username}</p>
+                                            </div>
                                         </Link>
                                     </div>
                                 ))
@@ -164,7 +172,7 @@ export function LeftSidebar({ authUser, authAccount, allchats }: { authUser: Use
                                 <p className="text-neutral-500">Загрузка чатов...</p>
                             ) : chats.length > 0 ? (
                                 chats.map((chat) => (
-                                    <Link href={`/dashboard/${chat.members[0].user.id}`} key={chat.id} className={`flex items-center px-[20px] py-[8px] gap-[20px] rounded-[10px] ${pathname == `/dashboard/${chat.id}` ? "bg-neutral-100" : "hover:bg-neutral-50" }`}>
+                                    <Link href={`/dashboard/${chat.id}`} key={chat.id} className={`flex items-center px-[20px] py-[8px] gap-[20px] rounded-[10px] ${pathname == `/dashboard/${chat.id}` ? "bg-neutral-100" : "hover:bg-neutral-50"}`}>
                                         <Image src={`/avatars/${chat.members[0].user.id}.png`} width={55} height={55} alt="" />
                                         <h5>{chat.members[0].user.firstName} {chat.members[0].user.lastName}</h5>
                                     </Link>
