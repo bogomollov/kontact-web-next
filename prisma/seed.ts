@@ -131,7 +131,7 @@ async function main() {
     update: {},
     create: {
       chat_id: chat.id,
-      sender_id: user.id,
+      sender_id: admin.id,
       content: "Привет. Это тестовое сообщение. Попробуй мне ответить",
     },
   });

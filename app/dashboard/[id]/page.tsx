@@ -21,7 +21,7 @@ export default async function Chat({ params }: { params: { id: string } }) {
   return (
     <div className="flex flex-col justify-between w-full h-full pb-[30px]">
       <ChatHeader chat={chat} authUser={Number(user_id)} />
-      <ChatContent chatcontent={chat} />
+      <ChatContent chatcontent={chat} authUser={Number(user_id)} />
       <ChatForm chat_id={id} />
     </div>
   );

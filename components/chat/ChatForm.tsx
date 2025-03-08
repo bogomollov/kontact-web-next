@@ -1,25 +1,26 @@
 "use client";
 
 import { sendMessage } from "@/actions/chat";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 export default function ChatForm({ chat_id }: { chat_id: number }) {
     const [message, setMessage] = useState("");
     const [isPending, startTransition] = useTransition();
-    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
 
         if (!message.trim()) return;
+        setMessage("");
 
         startTransition(async () => {
             try {
                 await sendMessage(Number(chat_id), message);
-                setMessage("");
+                router.refresh();
             } catch (err) {
-                setError((err as Error).message || "Ошибка отправки сообщения");
+                console.log("Ошибка отправки сообщения")
             }
         });
     };
@@ -36,6 +37,7 @@ export default function ChatForm({ chat_id }: { chat_id: number }) {
                         className="outline-0"
                         placeholder="Сообщение"
                         required
+                        value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         disabled={isPending}
                     />
