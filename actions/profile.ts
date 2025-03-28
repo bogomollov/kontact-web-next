@@ -18,8 +18,12 @@ export async function updateAvatar(account_id: number, file: File) {
   const filePath = path.join(uploadDir, `${account_id}.png`);
 
   try {
+    const roundedCorners = Buffer.from('<svg><rect x="0" y="0" width="50" height="50" rx="50" ry="50"/></svg>');
     const pngBuffer = await sharp(buffer)
-      .resize(100, 100).toFormat("png").toBuffer();
+      .resize(100, 100).composite([{
+        input: roundedCorners,
+        blend: 'dest-in'
+      }]).toFormat("png").toBuffer();
 
     await fs.writeFile(filePath, pngBuffer);
   } catch (error) {

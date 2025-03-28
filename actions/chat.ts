@@ -3,10 +3,6 @@ import { cache } from "react";
 import { prisma } from "@/prisma/client";
 import { verifySession } from "@/lib/dal";
 
-// const redis = await createClient()
-//   .on("error", (err) => console.log("Redis Client Error", err))
-//   .connect();
-
 export const getUserChatList = cache(async (Id: number) => {
   return await prisma.chat.findMany({
     where: {
@@ -126,19 +122,3 @@ export const sendMessage = cache(async (chat_id: number, message: string) => {
     },
   });
 });
-
-// const [id, firstName, lastName, middleName, department_id, position_id] = await redis.hmGet(`user:${findId}`, ['id', 'firstName', 'lastName', 'department_id', 'position_id']);
-
-// if (id) {
-//     let res = {
-//         id: Number(id),
-//         firstName: firstName,
-//         lastName: lastName,
-//         middleName: middleName,
-//         department_id: Number(department_id),
-//         position_id: Number(position_id)
-//     }
-//     return res
-// }
-
-// await redis.hSet(`messages:${findId}`, ['id', `${messages.id}`])

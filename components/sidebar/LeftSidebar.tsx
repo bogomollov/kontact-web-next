@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from "react";
+import React, { useState } from "react";
 import InputSearch from "../ui/InputSearch";
 import { Account, ChatType, User } from "@prisma/client";
 import Link from "next/link";
 import { logout } from "@/actions/auth";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import Avatar from "../ui/Avatar";
 
 type UserWithoutTimetamps = Omit<User, "middleName" | "department_id" | "position_id" | "updatedAt" | "deletedAt">;
 type AccountWithoutPassword = Omit<Account, "email" | "phone" | "password" | "updatedAt" | "deletedAt">;
@@ -66,7 +67,7 @@ export function LeftSidebar({ authUser, authAccount, allchats }: { authUser: Use
                     <div className="flex items-center justify-between gap-[20px] px-[20px] pt-[20px]">
                         <div className="flex items-center justify-center gap-[15px]">
                             <div className="relative">
-                                <Image src={"/avatars/" + authUser?.id + ".png"} alt={`avatar ${authUser.id}`} width={55} height={55} className="border rounded-full" />
+                                <Avatar src={"/avatars/" + authUser?.id + ".png"} alt={`avatar ${authUser.id}`} accountId={authUser?.id} size={55} />
                                 <div className="absolute bottom-1 right-1 rounded-full border border-white bg-blue-500 w-[12px] h-[12px]"></div>
                             </div>
                             <div className="flex flex-col">
@@ -154,7 +155,7 @@ export function LeftSidebar({ authUser, authAccount, allchats }: { authUser: Use
                                 searchResults.map((user) => (
                                     <div key={user.id}>
                                         <Link href={`/dashboard/${user.id}`} className={`flex items-center px-[20px] py-[8px] gap-[20px] rounded-[10px] hover:bg-neutral-50`}>
-                                            <Image src={`/avatars/${user.id}.png`} width={55} height={55} alt="" className="border rounded-full" />
+                                            <Image src={`/avatars/${user.id}.png`} width={55} height={55} alt="" className="border-neutral-950 rounded-full" />
                                             <div className="flex flex-col gap-[5px]">
                                                 <h5>{user.user.firstName} {user.user.lastName}</h5>
                                                 <p className="text-sm text-neutral-500">@{user.username}</p>
