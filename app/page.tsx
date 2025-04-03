@@ -41,9 +41,9 @@ export default function Home() {
               border: '1px solid #E5E5E5',
             }} />
         </div>
-        <div className="container flex flex-col mx-auto justify-between px-5">
-          <FAQ />
+        <div className="container flex flex-col mx-auto gap-[70px] justify-between px-5 mb-[70px]">
           <API />
+          <FAQ />
         </div>
       </main>
     </>

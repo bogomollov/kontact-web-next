@@ -20,17 +20,22 @@ export default function FAQ() {
     const [currentIndex, setIndex] = useState<number | null>(null);
 
     return (
-        <div id="faq" className="flex flex-col mx-auto p-4 border rounded-lg">
-            <h2 className="mb-4">Часто задаваемые вопросы</h2>
-            {faq.map((item, index) => (
-                <div key={index} className="mb-2">
-                    <button className="w-full text-left p-2 bg-neutral-200 rounded-md"
-                        onClick={() => setIndex(currentIndex === index ? null : index)}>
-                        {item.question}
-                    </button>
-                    {currentIndex === index && (<p className="p-2 bg-neutral-100 rounded-md mt-1">{item.answer}</p>)}
-                </div>
-            ))}
+        <div id="faq" className="flex flex-col items-center gap-[30px] w-full max-w-[585px] mx-auto rounded-lg">
+            <div className="flex flex-col gap-[10px]">
+                <h2>Часто задаваемые вопросы</h2>
+                <h4 className="text-neutral-500">Найдите ответы на интересующие вопросы</h4>
+            </div>
+            <div className="border w-full rounded-lg">
+                {faq.map((item, index) => (
+                    <div className="last:border-b-0" key={index}>
+                        <button className="w-full text-left px-3.5 py-2.5 border-b-1 text-base font-medium text-neutral-950"
+                            onClick={() => setIndex(currentIndex === index ? null : index)}>
+                            {item.question}
+                        </button>
+                        {currentIndex === index && (<p className="px-3.5 py-2.5 text-neutral-500">{item.answer}</p>)}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };

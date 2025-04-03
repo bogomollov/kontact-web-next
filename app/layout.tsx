@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Golos_Text } from "next/font/google";
+import { Golos_Text, Fira_Code } from "next/font/google";
 import "./app.css";
 
 const fontSans = Golos_Text({
-  subsets: ["latin"],
+  variable: "--font-sans",
+  subsets: ['latin'],
 });
+
+const fontMono = Fira_Code({
+  variable: "--font-mono",
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
   title: "kontact web",
@@ -18,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body className={`${fontSans.className} antialiased`}>{children}</body>
+      <body className={`${fontSans.variable} ${fontMono.variable} antialiased`}>{children}</body>
     </html>
   );
 }

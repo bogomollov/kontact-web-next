@@ -13,8 +13,8 @@ body {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-
-  --default-font-family: "Golos Text", serif;
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
   --default-ring-width: 1px;
 }
 
