@@ -11,11 +11,22 @@ interface AvatarProps {
   onUploadSuccess?: (url: string) => void;
 }
 
-export default function Avatar({src, alt = "avatar", size = 55, className = "", accountId, onUploadSuccess}: AvatarProps) {
-  const [preview, setPreview] = useState<string>(src || `/avatars/${accountId}.svg`);
+export default function Avatar({
+  src,
+  alt = "avatar",
+  size = 55,
+  className = "",
+  accountId,
+  onUploadSuccess,
+}: AvatarProps) {
+  const [preview, setPreview] = useState<string>(
+    src || `/avatars/${accountId}.svg`,
+  );
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -43,7 +54,10 @@ export default function Avatar({src, alt = "avatar", size = 55, className = "", 
   };
 
   return (
-    <div className={`relative ${className}`} style={{ width: size, height: size }}>
+    <div
+      className={`relative ${className}`}
+      style={{ width: size, height: size }}
+    >
       <label className="cursor-pointer">
         <Image
           src={preview}
@@ -52,9 +66,18 @@ export default function Avatar({src, alt = "avatar", size = 55, className = "", 
           height={size}
           className="rounded-full object-cover"
         />
-        <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+        <input
+          type="file"
+          className="hidden"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
       </label>
-      {loading && <span className="absolute inset-0 flex items-center justify-center bg-white/50">Загрузка...</span>}
+      {loading && (
+        <span className="absolute inset-0 flex items-center justify-center bg-white/50">
+          Загрузка...
+        </span>
+      )}
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { verifySession } from "@/lib/dal";
 
 export default async function Chat({ params }: { params: { id: string } }) {
   const id = Number(params.id);
-  const { user_id } = await verifySession()
+  const { user_id } = await verifySession();
 
   const findChat = await prisma.chat.findUnique({
     where: { id },
@@ -19,7 +19,7 @@ export default async function Chat({ params }: { params: { id: string } }) {
   if (!findChat || !chat || !user_id) notFound();
 
   return (
-    <div className="flex flex-col justify-between w-full h-full pb-[30px]">
+    <div className="flex h-full w-full flex-col justify-between pb-[30px]">
       <ChatHeader chat={chat} authUser={Number(user_id)} />
       <ChatContent chatcontent={chat} authUser={Number(user_id)} />
       <ChatForm chat_id={id} />

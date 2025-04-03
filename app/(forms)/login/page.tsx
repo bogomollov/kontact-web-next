@@ -13,36 +13,41 @@ export default function LoginForm() {
   const [state, action, pending] = useActionState(login, undefined);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="flex flex-col items-center gap-[20px] md:max-w-md w-full">
+    <div className="flex h-screen flex-col items-center justify-center">
+      <div className="flex w-full flex-col items-center gap-[20px] md:max-w-md">
         <div className="flex flex-col items-center gap-[10px]">
           <h2>Авторизация</h2>
-          <h5 className="text-neutral-500">Войдите в аккаунт, чтобы общаться с коллегами</h5>
+          <h5 className="text-neutral-500">
+            Войдите в аккаунт, чтобы общаться с коллегами
+          </h5>
         </div>
-        <form action={action} className="flex flex-col gap-[20px] w-full">
-          <div className="flex flex-col gap-[10px] w-full">
-            <div className="flex flex-col items-start gap-[8px] w-full">
+        <form action={action} className="flex w-full flex-col gap-[20px]">
+          <div className="flex w-full flex-col gap-[10px]">
+            <div className="flex w-full flex-col items-start gap-[8px]">
               <InputLabel htmlFor="email">Электронная почта</InputLabel>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                className="inline-flex focus:outline-blue-500 w-full border px-[14px] py-[10px] rounded-[10px]"
+                className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
                 placeholder="user@mail.ru"
-                required />
+                required
+              />
               <InputError message={state?.errors?.email} />
             </div>
             <div className="flex w-full">
-              <div className="flex flex-col items-start gap-[8px] w-full">
-                <div className="flex justify-between w-full">
+              <div className="flex w-full flex-col items-start gap-[8px]">
+                <div className="flex w-full justify-between">
                   <label htmlFor="password">Пароль</label>
-                  <Link href="/reset-password" className="text-blue-500">Забыли пароль?</Link>
+                  <Link href="/reset-password" className="text-blue-500">
+                    Забыли пароль?
+                  </Link>
                 </div>
                 <input
                   id="password"
                   name="password"
                   type="password"
-                  className="inline-flex focus:outline-blue-500 w-full border px-[14px] py-[10px] rounded-[10px]"
+                  className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
                   placeholder="••••••••••"
                   required
                 />
@@ -51,20 +56,29 @@ export default function LoginForm() {
               </div>
             </div>
           </div>
-          <Button type="submit" disabled={pending} className="text-white bg-blue-500 disabled:bg-blue-500/80 rounded-md w-full">
+          <Button
+            type="submit"
+            disabled={pending}
+            className="w-full rounded-md bg-blue-500 text-white disabled:bg-blue-500/80"
+          >
             Войти
           </Button>
         </form>
-        <div className="flex flex-col gap-[20px] w-full">
+        <div className="flex w-full flex-col gap-[20px]">
           <div className="flex w-full items-center justify-between gap-4">
-            <hr className="w-full h-px bg-neutral-300 border-0"></hr>
+            <hr className="h-px w-full border-0 bg-neutral-300"></hr>
             <small className="text-neutral-500">ИЛИ</small>
-            <hr className="w-full h-px bg-neutral-300 border-0"></hr>
+            <hr className="h-px w-full border-0 bg-neutral-300"></hr>
           </div>
-          <div className="flex flex-col items-center gap-[25px] w-full">
+          <div className="flex w-full flex-col items-center gap-[25px]">
             <div className="flex w-full gap-3">
               {oauthProviders.map(({ id, name, icon }) => (
-                <Button key={id} provider={id} icon={icon} className="border w-full rounded-md gap-2">
+                <Button
+                  key={id}
+                  provider={id}
+                  icon={icon}
+                  className="w-full gap-2 rounded-md border"
+                >
                   Войти через {name}
                 </Button>
               ))}

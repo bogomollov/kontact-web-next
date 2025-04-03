@@ -8,7 +8,7 @@ export default function RegisterForm() {
   const [state, action, pending] = useActionState(register, undefined);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex h-screen flex-col items-center justify-center">
       <div className="flex flex-col items-center gap-[25px] md:max-w-md">
         <div className="flex flex-col items-center gap-[10px]">
           <h2>Регистрация</h2>
@@ -16,76 +16,76 @@ export default function RegisterForm() {
             Создайте аккаунт, чтобы общаться с коллегами
           </h5>
         </div>
-        <form action={action} className="flex flex-col gap-[20px] w-full">
-          <div className="flex flex-col gap-[10px] w-full">
-            <div className="flex flex-col items-start gap-[8px] w-full">
+        <form action={action} className="flex w-full flex-col gap-[20px]">
+          <div className="flex w-full flex-col gap-[10px]">
+            <div className="flex w-full flex-col items-start gap-[8px]">
               <label htmlFor="firstName">Имя</label>
               <input
                 id="firstName"
                 name="firstName"
                 type="text"
-                className="inline-flex focus:outline-blue-500 border px-[14px] py-[10px] rounded-[10px]"
+                className="inline-flex rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
                 placeholder="Введите имя"
                 required
               />
               <InputError message={state?.errors?.firstName} />
             </div>
-            <div className="flex flex-col items-start gap-[8px] w-full">
+            <div className="flex w-full flex-col items-start gap-[8px]">
               <label htmlFor="lastName">Фамилия</label>
               <input
                 id="lastName"
                 name="lastName"
                 type="text"
-                className="inline-flex focus:outline-blue-500 border px-[14px] py-[10px] rounded-[10px]"
+                className="inline-flex rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
                 placeholder="Введите фамилию"
                 required
               />
               <InputError message={state?.errors?.lastName} />
             </div>
-            <div className="flex flex-col items-start gap-[8px] w-full">
+            <div className="flex w-full flex-col items-start gap-[8px]">
               <label htmlFor="middleName">Отчество</label>
               <input
                 id="middleName"
                 name="middleName"
                 type="text"
-                className="inline-flex focus:outline-blue-500 border px-[14px] py-[10px] rounded-[10px]"
+                className="inline-flex rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
                 placeholder="Введите отчество"
                 required
               />
               <InputError message={state?.errors?.middleName} />
             </div>
-            <div className="flex flex-col items-start gap-[8px] w-full">
+            <div className="flex w-full flex-col items-start gap-[8px]">
               <label htmlFor="email">Электронная почта</label>
               <input
                 id="email"
                 name="email"
                 type="email"
-                className="inline-flex focus:outline-blue-500 w-full border px-[14px] py-[10px] rounded-[10px]"
+                className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
                 placeholder="user@mail.ru"
                 required
               />
               <InputError message={state?.errors?.email} />
               <InputError message={state?.message} />
             </div>
-            <div className="flex flex-col items-start gap-[8px] w-full">
+            <div className="flex w-full flex-col items-start gap-[8px]">
               <label htmlFor="username">Псевдоним</label>
               <input
                 id="username"
                 name="username"
                 type="text"
-                className="inline-flex focus:outline-blue-500 w-full border px-[14px] py-[10px] rounded-[10px]"
+                className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
                 placeholder="Придумайте псевдоним"
                 required
               />
               <InputError message={state?.errors?.username} />
             </div>
-            <div className="flex flex-col items-start gap-[8px] w-full">
+            <div className="flex w-full flex-col items-start gap-[8px]">
               <label htmlFor="password">Пароль</label>
               <input
                 id="password"
                 name="password"
                 type="password"
-                className="inline-flex focus:outline-blue-500 w-full border px-[14px] py-[10px] rounded-[10px]"
+                className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
                 placeholder="••••••••••"
                 required
               />
@@ -95,20 +95,20 @@ export default function RegisterForm() {
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex justify-center px-4 py-2 rounded-md text-white bg-blue-500 disabled:bg-blue-500/80 w-full"
+            className="inline-flex w-full justify-center rounded-md bg-blue-500 px-4 py-2 text-white disabled:bg-blue-500/80"
           >
             Создать аккаунт
           </button>
         </form>
-        <div className="flex flex-col gap-[20px] w-full">
+        <div className="flex w-full flex-col gap-[20px]">
           <div className="flex w-full items-center justify-between gap-4">
-            <hr className="w-full h-px bg-neutral-300 border-0"></hr>
+            <hr className="h-px w-full border-0 bg-neutral-300"></hr>
             <small className="text-neutral-500">ИЛИ</small>
-            <hr className="w-full h-px bg-neutral-300 border-0"></hr>
+            <hr className="h-px w-full border-0 bg-neutral-300"></hr>
           </div>
-          <div className="flex flex-col items-center gap-[25px] w-full">
-            <div className="flex gap-[15px] w-full">
-              <button className="inline-flex justify-center items-center px-4 py-2 rounded-md border w-full gap-3">
+          <div className="flex w-full flex-col items-center gap-[25px]">
+            <div className="flex w-full gap-[15px]">
+              <button className="inline-flex w-full items-center justify-center gap-3 rounded-md border px-4 py-2">
                 <svg
                   viewBox="0 0 24 24"
                   aria-hidden="true"

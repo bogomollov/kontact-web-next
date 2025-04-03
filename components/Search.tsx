@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState } from "react";
 import InputSearch from "./ui/InputSearch";
@@ -9,14 +9,14 @@ export function Search() {
 
   const handleData = async (data: any) => {
     setData(data.data);
-  }
+  };
 
   return (
     <div className="px-[20px]">
       <InputSearch
         searchUrl="search"
         callbackData={handleData}
-        className="inline-flex focus:outline-blue-500 w-full border pl-[55px] pr-[20px] py-[12px] rounded-[10px]"
+        className="inline-flex w-full rounded-[10px] border py-[12px] pr-[20px] pl-[55px] focus:outline-blue-500"
         placeholder="Поиск пользователей"
       />
       <SearchViewData data={data} />

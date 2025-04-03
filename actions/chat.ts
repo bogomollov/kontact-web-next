@@ -4,28 +4,30 @@ import { prisma } from "@/prisma/client";
 import { verifySession } from "@/lib/dal";
 
 export const getUserChatList = cache(async (Id: number) => {
-  return await prisma.chat.findMany({
-    where: {
-      members: {
-        some: { user_id: Id },
-      },
-    },
-    include: {
-      members: {
-        include: {
-          user: true,
+  return await prisma.chat
+    .findMany({
+      where: {
+        members: {
+          some: { user_id: Id },
         },
       },
-    },
-    orderBy: {
-      updatedAt: "desc",
-    },
-  }).then((chats) =>
-    chats.map((chat) => ({
-      ...chat,
-      members: chat.members.filter((m) => m.user.id !== Id),
-    })),
-  );
+      include: {
+        members: {
+          include: {
+            user: true,
+          },
+        },
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    })
+    .then((chats) =>
+      chats.map((chat) => ({
+        ...chat,
+        members: chat.members.filter((m) => m.user.id !== Id),
+      })),
+    );
 });
 
 export const getOrCreateChat = cache(async (findId: number) => {
@@ -62,7 +64,9 @@ export const getOrCreateChat = cache(async (findId: number) => {
         members: {
           connectOrCreate: [
             {
-              where: { chat_id_user_id: { chat_id: 1, user_id: Number(user_id) } },
+              where: {
+                chat_id_user_id: { chat_id: 1, user_id: Number(user_id) },
+              },
               create: { user_id: Number(user_id), role_id: 1 },
             },
             {

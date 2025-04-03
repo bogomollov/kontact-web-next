@@ -1,6 +1,11 @@
 "use server";
 import { createSession, deleteSession } from "@/lib/session";
-import { LoginFormSchema, FormLoginState, RegisterFormSchema, FormRegisterState } from "@/lib/validation";
+import {
+  LoginFormSchema,
+  FormLoginState,
+  RegisterFormSchema,
+  FormRegisterState,
+} from "@/lib/validation";
 import { compare, genSaltSync, hashSync } from "bcrypt-ts";
 import { redirect } from "next/navigation";
 
@@ -80,7 +85,8 @@ export async function register(state: FormRegisterState, formData: FormData) {
     };
   }
 
-  const { firstName, lastName, middleName, email, username, password } = validatedFields.data;
+  const { firstName, lastName, middleName, email, username, password } =
+    validatedFields.data;
 
   const emailFind = await prisma.account.findUnique({
     where: {

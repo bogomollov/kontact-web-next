@@ -6,7 +6,10 @@ export async function POST(req: NextRequest) {
     const { chat_id, message } = await req.json();
 
     if (!message || !chat_id) {
-      return NextResponse.json({ error: "Недостаточно данных" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Недостаточно данных" },
+        { status: 400 },
+      );
     }
 
     await sendMessage(chat_id, message);

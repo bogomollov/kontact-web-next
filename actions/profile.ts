@@ -1,6 +1,13 @@
 "use server";
 import { deleteSession } from "@/lib/session";
-import { AccountFormSchema, AccountFormState, PasswordFormSchema, PasswordFormState, UserFormSchema, UserFormState } from "@/lib/validation";
+import {
+  AccountFormSchema,
+  AccountFormState,
+  PasswordFormSchema,
+  PasswordFormState,
+  UserFormSchema,
+  UserFormState,
+} from "@/lib/validation";
 import { prisma } from "@/prisma/client";
 import { compare, genSaltSync, hashSync } from "bcrypt-ts";
 import fs from "fs/promises";
@@ -18,12 +25,19 @@ export async function updateAvatar(account_id: number, file: File) {
   const filePath = path.join(uploadDir, `${account_id}.png`);
 
   try {
-    const roundedCorners = Buffer.from('<svg><rect x="0" y="0" width="50" height="50" rx="50" ry="50"/></svg>');
+    const roundedCorners = Buffer.from(
+      '<svg><rect x="0" y="0" width="100" height="100" rx="100" ry="100"/></svg>',
+    );
     const pngBuffer = await sharp(buffer)
-      .resize(100, 100).composite([{
-        input: roundedCorners,
-        blend: 'dest-in'
-      }]).toFormat("png").toBuffer();
+      .resize(100, 100)
+      .composite([
+        {
+          input: roundedCorners,
+          blend: "dest-in",
+        },
+      ])
+      .toFormat("png")
+      .toBuffer();
 
     await fs.writeFile(filePath, pngBuffer);
   } catch (error) {
@@ -32,7 +46,10 @@ export async function updateAvatar(account_id: number, file: File) {
   }
 }
 
-export async function updateUser(state: UserFormState | undefined, formData: FormData) {
+export async function updateUser(
+  state: UserFormState | undefined,
+  formData: FormData,
+) {
   const validatedFields = UserFormSchema.safeParse({
     account_id: formData.get("account_id"),
     firstName: formData.get("firstName"),
@@ -50,8 +67,8 @@ export async function updateUser(state: UserFormState | undefined, formData: For
     where: { id: Number(account_id) },
     select: {
       user_id: true,
-    }
-  })
+    },
+  });
 
   if (!account) {
     return { errors: { account_id: ["Аккаунт не найден"] } };
@@ -65,7 +82,10 @@ export async function updateUser(state: UserFormState | undefined, formData: For
   redirect("/profile");
 }
 
-export async function updateAccount(state: AccountFormState | undefined, formData: FormData) {
+export async function updateAccount(
+  state: AccountFormState | undefined,
+  formData: FormData,
+) {
   const validatedFields = AccountFormSchema.safeParse({
     account_id: formData.get("account_id"),
     username: formData.get("username"),
@@ -80,8 +100,8 @@ export async function updateAccount(state: AccountFormState | undefined, formDat
   const { account_id, username, email, phone } = validatedFields.data;
 
   const account = await prisma.account.findUnique({
-    where: { id: Number(account_id) }
-  })
+    where: { id: Number(account_id) },
+  });
 
   if (!account) {
     return { errors: { account_id: ["Аккаунт не найден"] } };
@@ -95,7 +115,10 @@ export async function updateAccount(state: AccountFormState | undefined, formDat
   redirect("/profile");
 }
 
-export async function updatePassword(state: PasswordFormState | undefined, formData: FormData) {
+export async function updatePassword(
+  state: PasswordFormState | undefined,
+  formData: FormData,
+) {
   const validatedFields = PasswordFormSchema.safeParse({
     account_id: formData.get("account_id"),
     currentPassword: formData.get("currentPassword"),
@@ -107,21 +130,25 @@ export async function updatePassword(state: PasswordFormState | undefined, formD
     return { errors: validatedFields.error.flatten().fieldErrors };
   }
 
-  const { account_id, currentPassword, newPassword, repeatPassword } = validatedFields.data;
+  const { account_id, currentPassword, newPassword, repeatPassword } =
+    validatedFields.data;
 
   if (newPassword != repeatPassword) {
-    return { message: "Пароли не совпадают" }
+    return { message: "Пароли не совпадают" };
   }
 
   const account = await prisma.account.findUnique({
-    where: { id: Number(account_id) }
-  })
+    where: { id: Number(account_id) },
+  });
 
   if (!account) {
     return { message: "Неправильный account_id" };
   }
 
-  const passwordMatched = await compare(currentPassword, account.password || '');
+  const passwordMatched = await compare(
+    currentPassword,
+    account.password || "",
+  );
   if (!passwordMatched) {
     return {
       message: "Неправильный текущий пароль",
@@ -142,13 +169,13 @@ export async function updatePassword(state: PasswordFormState | undefined, formD
 export async function deleteAccount(account: number) {
   const findAccount = await prisma.account.findUnique({
     where: {
-      id: account
+      id: account,
     },
     select: {
       id: true,
       user_id: true,
-    }
-  })
+    },
+  });
 
   await prisma.user.update({
     where: { id: findAccount?.user_id },
@@ -157,10 +184,10 @@ export async function deleteAccount(account: number) {
 
   await prisma.account.update({
     where: {
-      id: findAccount?.id
+      id: findAccount?.id,
     },
     data: { deletedAt: new Date() },
-  })
+  });
 
-  await deleteSession()
+  await deleteSession();
 }

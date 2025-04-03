@@ -8,7 +8,10 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file");
 
     if (!account_id || !file || !(file instanceof File)) {
-      return NextResponse.json({ error: "Некорректные данные" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Некорректные данные" },
+        { status: 400 },
+      );
     }
 
     await updateAvatar(Number(account_id), file);
