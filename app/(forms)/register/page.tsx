@@ -8,7 +8,7 @@ export default function RegisterForm() {
   const [state, action, pending] = useActionState(register, undefined);
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center">
+    <div className="flex min-h-screen flex-col items-center justify-center">
       <div className="flex flex-col items-center gap-[25px] md:max-w-md">
         <div className="flex flex-col items-center gap-[10px]">
           <h2>Регистрация</h2>

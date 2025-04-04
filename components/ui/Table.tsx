@@ -36,7 +36,7 @@ export default function Table({
         <>
           <div className="flex items-center gap-2 border-t border-b p-3">
             {status_response && (
-              <Button className="rounded-md bg-green-500 text-white">
+              <Button className={`${status_response == 200 ? 'bg-green-500' : 'bg-red-500'} rounded-md  text-white`}>
                 {status_response}
               </Button>
             )}

@@ -13,7 +13,7 @@ export default function InputError({
 }: InputErrorProps) {
   if (!message) return undefined;
   return (
-    <small className={"text-red-500 " + className} {...props}>
+    <small className={`text-red-500 ${className}`} {...props}>
       {message}
     </small>
   );
