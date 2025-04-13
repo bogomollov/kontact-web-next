@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  user
+  admin
+}
+
+enum ChatType {
+  private
+  group
+}
+
+enum ChatMemberRole {
+  member
+  admin
+}
+
+model Role {
+  id       Int       @id @default(autoincrement())
+  name     UserRole  @unique
+  accounts Account[]
+
+  @@map("roles")
+}
+
+model Department {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  User User[]
+
+  @@map("departments")
+}
+
+model Position {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  User User[]
+
+  @@map("positions")
+}
+
+model User {
+  id            Int          @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  middleName    String
+  department_id Int?
+  position_id   Int?
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+  account       Account?
+  members       ChatMember[]
+  messages      Message[]
+  department    Department?  @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  position      Position?    @relation(fields: [position_id], references: [id], onDelete: Cascade)
+
+  @@map("users")
+}
+
+model Account {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  password  String?
+  email     String?   @unique
+  phone     String?   @unique
+  role_id   Int
+  user_id   Int       @unique
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  role      Role      @relation(fields: [role_id], references: [id], onDelete: NoAction)
+  user      User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model Chat {
+  id        Int          @id @default(autoincrement())
+  name      String?
+  type      ChatType     @default(private)
+  updatedAt DateTime     @updatedAt
+  members   ChatMember[]
+  messages  Message[]
+
+  @@map("chats")
+}
+
+model ChatMember {
+  chat_id  Int
+  user_id  Int
+  joinedAt DateTime @default(now())
+  chat     Chat     @relation(fields: [chat_id], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([chat_id, user_id], name: "chat_id_user_id")
+  @@map("chatsmember")
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  chat_id   Int
+  sender_id Int?
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  chat      Chat     @relation(fields: [chat_id], references: [id], onDelete: Cascade)
+  sender    User?    @relation(fields: [sender_id], references: [id])
+
+  @@map("messages")
+}
