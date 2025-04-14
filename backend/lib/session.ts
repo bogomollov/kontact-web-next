@@ -8,15 +8,13 @@ const AccessExpiresAt = new Date(Date.now() + 1 * 24 * 60 * 60 * 3000);
 
 export interface SessionPayload extends JWTPayload {
   id: number;
-  username: string;
-  role: string;
 }
 
 export async function encrypt(payload: SessionPayload) {
-  return new SignJWT(payload)
-    .setProtectedHeader({ alg: "HS256" })
+  return await new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256", typ: "JWT" })
     .setIssuedAt()
-    .setSubject(crypto.randomUUID())
+    .setSubject(`${payload.id}`)
     .setExpirationTime(AccessExpiresAt)
     .sign(encodedAccessKey);
 }
@@ -25,6 +23,7 @@ export async function decrypt(session: string | undefined = "") {
   try {
     const { payload } = await jwtVerify(session, encodedAccessKey, {
       algorithms: ["HS256"],
+      typ: "JWT",
     });
     return payload;
   } catch (error) {
@@ -38,12 +37,7 @@ export async function createSession(
   res: Response,
   payload: SessionPayload
 ) {
-  const session = await encrypt({
-    id: payload.id,
-    username: payload.username,
-    role: payload.role,
-  });
-
+  const session = await encrypt({ id: payload.id });
   res.cookie("session", session, {
     httpOnly: true,
     secure: node_env == "prod",

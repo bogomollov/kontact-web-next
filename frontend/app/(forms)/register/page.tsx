@@ -35,9 +35,6 @@ export default function RegisterForm() {
     try {
       const response = await apiFetch("/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
         credentials: "include",
       });

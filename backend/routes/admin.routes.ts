@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
 import { PrismaClient } from "../generated/prisma/client";
-import { isAdmin } from "../middleware/auth";
+import { isAuth } from "../middleware/auth";
 
 const prisma = new PrismaClient();
 const router = express.Router();
 
-router.get("/admin", isAdmin, async (req: Request, res: Response) => {
+router.get("/admin", isAuth, async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany();
     const accounts = await prisma.account.findMany();
@@ -21,7 +21,7 @@ router.get("/admin", isAdmin, async (req: Request, res: Response) => {
   }
 });
 
-router.get("/users", isAdmin, async (req: Request, res: Response) => {
+router.get("/users", isAuth, async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany();
     res.json(users);

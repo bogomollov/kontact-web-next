@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/lib/apiFetch";
 import { InputHTMLAttributes, useEffect, useState } from "react";
 
 interface InputSearchProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -28,8 +29,11 @@ export default function InputSearch({
 
     const searchData = async () => {
       try {
-        const response = await fetch(
-          `${BASE_URL}/api/${searchUrl}?query=${encodeURIComponent(query)}`,
+        const response = await apiFetch(
+          `/chats/search?query=${encodeURIComponent(query)}`,
+          {
+            credentials: "include",
+          },
         );
         const data = await response.json();
         callbackData(data);

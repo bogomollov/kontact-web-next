@@ -9,17 +9,6 @@ import Avatar from "../ui/Avatar";
 import { IChatListItem, IMe, TChatListItem } from "@/types";
 import { apiFetch } from "@/lib/apiFetch";
 
-type FindData = {
-  id: number;
-  username: string;
-  email: string;
-  user: {
-    firstName: string;
-    lastName: string;
-    middleName?: string | null;
-  };
-};
-
 export function LeftSidebar({
   authUser,
   allchats,
@@ -31,7 +20,9 @@ export function LeftSidebar({
 
   const [chats, setChats] = useState<IChatListItem[]>(allchats);
   const [isChatLoading, setChatLoading] = useState(false);
-  const [searchResults, setSearchResults] = useState<FindData[] | null>(null);
+  const [searchResults, setSearchResults] = useState<IChatListItem[] | null>(
+    null,
+  );
   const [isSearching, setSearching] = useState(false);
 
   const handleLogout = async () => {
@@ -45,7 +36,7 @@ export function LeftSidebar({
     }
   };
 
-  const handleSearchResults = (data: { data: FindData[] }) => {
+  const handleSearchResults = (data: { data: IChatListItem[] }) => {
     if (data?.data) {
       setSearchResults(data.data);
       setSearching(data.data.length > 0);
@@ -206,12 +197,7 @@ export function LeftSidebar({
                         className="rounded-full border-neutral-950"
                       />
                       <div className="flex flex-col gap-[5px]">
-                        <h5>
-                          {user.user.firstName} {user.user.lastName}
-                        </h5>
-                        <p className="text-sm text-neutral-500">
-                          @{user.username}
-                        </p>
+                        <h5>{user.name}</h5>
                       </div>
                     </Link>
                   </div>

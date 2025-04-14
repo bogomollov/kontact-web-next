@@ -73,13 +73,9 @@ router.post("/register", async (req: Request, res: Response) => {
       },
     });
 
-    const userData = {
+    await createSession(req, res, {
       id: newUser.id,
-      username: account.username,
-      role: "user",
-    };
-
-    await createSession(req, res, userData);
+    });
     res.status(201).json({ message: "Успешная регистрация" });
   } catch (error: any) {
     if (error instanceof z.ZodError) {

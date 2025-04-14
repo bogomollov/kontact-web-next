@@ -114,6 +114,7 @@ async function main() {
     update: {},
     create: {
       type: "group",
+      name: "Тестовая группа",
     },
   });
 

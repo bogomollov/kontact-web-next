@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 const publicRoutes = ["/login", "/register"];
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/dashboard", "/admin", "/profile", "/saved"];
 
 function isJWT(token: string | undefined): boolean {
   return !!token && token.split(".").length === 3;

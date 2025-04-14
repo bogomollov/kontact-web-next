@@ -34,9 +34,6 @@ export default function LoginForm() {
     try {
       const response = await apiFetch("/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
         credentials: "include",
       });

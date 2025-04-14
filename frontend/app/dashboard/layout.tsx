@@ -1,18 +1,19 @@
 import { Suspense } from "react";
 import Loading from "./loading";
-
 import { LeftSidebar } from "@/components/sidebar/LeftSidebar";
 import { apiFetch } from "@/lib/apiFetch";
 import { IChatListItem, IMe } from "@/types";
+import { cookies } from "next/headers";
 
 export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = (await cookies()).get("session")?.value;
   const meData = await apiFetch("/me", {
     headers: {
-      "Content-Type": "application/json",
+      Authorization: `Bearer ${session}`,
     },
     credentials: "include",
   });
@@ -20,11 +21,10 @@ export default async function DashboardLayout({
 
   const chatsData = await apiFetch("/chats", {
     headers: {
-      "Content-Type": "application/json",
+      Authorization: `Bearer ${session}`,
     },
     credentials: "include",
   });
-  console.log(chatsData);
   const chatList: IChatListItem[] = (await chatsData.json()) as IChatListItem[];
 
   if (!me) return null;
