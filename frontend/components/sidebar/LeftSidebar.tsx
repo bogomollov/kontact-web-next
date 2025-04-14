@@ -1,13 +1,12 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import InputSearch from "../ui/InputSearch";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import Avatar from "../ui/Avatar";
+import { usePathname, useRouter } from "next/navigation";
 import { IChatListItem, IMe, TChatListItem } from "@/types";
 import { apiFetch } from "@/lib/apiFetch";
+import imageLoader from "@/lib/imageLoader";
 
 export function LeftSidebar({
   authUser,
@@ -17,34 +16,28 @@ export function LeftSidebar({
   allchats: TChatListItem[];
 }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   const [chats, setChats] = useState<IChatListItem[]>(allchats);
-  const [isChatLoading, setChatLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<IChatListItem[] | null>(
     null,
   );
   const [isSearching, setSearching] = useState(false);
 
   const handleLogout = async () => {
-    try {
-      await apiFetch("/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch (error: any) {
-      console.log(error);
+    const res = await apiFetch("/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    if (res.ok) {
+      router.refresh();
     }
   };
 
-  const handleSearchResults = (data: { data: IChatListItem[] }) => {
-    if (data?.data) {
-      setSearchResults(data.data);
-      setSearching(data.data.length > 0);
-    } else {
-      setSearchResults([]);
-      setSearching(false);
-    }
-  };
+  const handleSearchResults = useCallback((data: IChatListItem[] | null) => {
+    setSearchResults(data);
+    setSearching(!!data);
+  }, []);
 
   return (
     <>
@@ -53,11 +46,13 @@ export function LeftSidebar({
           <div className="flex items-center justify-between gap-[20px] px-[20px] pt-[20px]">
             <div className="flex items-center justify-center gap-[15px]">
               <div className="relative">
-                <Avatar
-                  src={"/avatars/" + authUser?.id + ".png"}
+                <Image
+                  loader={imageLoader}
+                  src={`${authUser.image}`}
+                  width={55}
+                  height={55}
                   alt={`avatar ${authUser.id}`}
-                  accountId={authUser?.id}
-                  size={55}
+                  className="rounded-full border"
                 />
                 <div className="absolute right-1 bottom-1 h-[12px] w-[12px] rounded-full border border-white bg-blue-500"></div>
               </div>
@@ -124,112 +119,74 @@ export function LeftSidebar({
           </div>
           <div className="px-[20px]">
             <InputSearch
-              searchUrl="search"
               callbackData={handleSearchResults}
               className="inline-flex w-full rounded-[10px] border py-[12px] pr-[20px] pl-[55px] focus:outline-blue-500"
               placeholder="Поиск пользователей"
             />
           </div>
-          <div className="flex flex-col px-[20px] pb-[10px]">
-            <div className="flex w-full items-center justify-between">
-              <Link href="/saved">
-                <div className="flex items-center justify-between">
-                  <div className="flex w-full items-center gap-[15px] rounded-[10px] px-[20px] py-[5px] hover:bg-neutral-100">
-                    <svg
-                      width="16"
-                      height="21"
-                      viewBox="0 0 16 21"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M1 6.3C1 4.61984 1 3.77976 1.32698 3.13803C1.6146 2.57354 2.07354 2.1146 2.63803 1.82698C3.27976 1.5 4.11984 1.5 5.8 1.5H10.2C11.8802 1.5 12.7202 1.5 13.362 1.82698C13.9265 2.1146 14.3854 2.57354 14.673 3.13803C15 3.77976 15 4.61984 15 6.3V19.5L8 15.5L1 19.5V6.3Z"
-                        stroke="#737373"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <p className="text-neutral-500">Избранное</p>
-                  </div>
-                </div>
-              </Link>
-              <Link href="/createGroup">
-                <div className="flex items-center justify-between">
-                  <div className="flex w-full items-center gap-[15px] rounded-[10px] px-[20px] py-[5px] hover:bg-neutral-100">
-                    <svg
-                      width="22"
-                      height="21"
-                      viewBox="0 0 22 21"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M18 19.5V13.5M15 16.5H21M11 13.5H7C5.13623 13.5 4.20435 13.5 3.46927 13.8045C2.48915 14.2105 1.71046 14.9892 1.30448 15.9693C1 16.7044 1 17.6362 1 19.5M14.5 1.79076C15.9659 2.38415 17 3.82131 17 5.5C17 7.17869 15.9659 8.61585 14.5 9.20924M12.5 5.5C12.5 7.70914 10.7091 9.5 8.5 9.5C6.29086 9.5 4.5 7.70914 4.5 5.5C4.5 3.29086 6.29086 1.5 8.5 1.5C10.7091 1.5 12.5 3.29086 12.5 5.5Z"
-                        stroke="#737373"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <p className="text-neutral-500">Создать группу</p>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
+          <div className="flex flex-col px-[20px] pb-[5px]"></div>
         </div>
         <div className="flex flex-col gap-[8px] px-[20px]">
           {isSearching ? (
-            <div>
+            <>
               {searchResults && searchResults.length > 0 ? (
                 searchResults.map((user) => (
-                  <div key={user.id}>
-                    <Link
-                      href={`/dashboard/${user.id}`}
-                      className={`flex items-center gap-[20px] rounded-[10px] px-[20px] py-[8px] hover:bg-neutral-50`}
-                    >
-                      <Image
-                        src={`/avatars/${user.id}.png`}
-                        width={55}
-                        height={55}
-                        alt=""
-                        className="rounded-full border-neutral-950"
-                      />
-                      <div className="flex flex-col gap-[5px]">
-                        <h5>{user.name}</h5>
-                      </div>
-                    </Link>
-                  </div>
+                  <Link
+                    key={user.id}
+                    href={`/dashboard/${user.id}`}
+                    className={`flex items-center gap-[20px] rounded-[10px] px-[20px] py-[10px]`}
+                  >
+                    <Image
+                      loader={imageLoader}
+                      src={`${user.image}`}
+                      width={55}
+                      height={55}
+                      alt={`avatar ${user.id}`}
+                      className="rounded-full"
+                    />
+                    <div className="flex flex-1 items-center justify-between">
+                      <h5>{user.name}</h5>
+                      <small className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-blue-500 text-white">
+                        {user.unreadCount}
+                      </small>
+                    </div>
+                  </Link>
                 ))
               ) : (
-                <p className="text-neutral-500">Ничего не найдено</p>
+                <p className="text-center text-neutral-500">
+                  Ничего не найдено
+                </p>
               )}
-            </div>
+            </>
           ) : (
-            <div className="flex flex-col">
-              {isChatLoading ? (
-                <p className="text-neutral-500">Загрузка чатов...</p>
-              ) : chats.length > 0 ? (
+            <>
+              {chats && chats.length > 0 ? (
                 chats.map((chat) => (
                   <Link
                     href={`/dashboard/${chat.id}`}
                     key={chat.id}
-                    className={`flex items-center gap-[20px] rounded-[10px] px-[20px] py-[8px] ${pathname == `/dashboard/${chat.id}` ? "bg-neutral-100" : "hover:bg-neutral-50"}`}
+                    className={`flex items-center gap-[20px] rounded-[10px] px-[20px] py-[10px] ${pathname == `/dashboard/${chat.id}` ? "bg-neutral-100" : "hover:bg-neutral-50"}`}
                   >
                     <Image
+                      loader={imageLoader}
                       src={`${chat.image}`}
                       width={55}
                       height={55}
-                      alt=""
+                      alt={`chat avatars ${chat.id}`}
+                      className="rounded-full"
                     />
-                    <h5>{chat.name}</h5>
+                    <div className="flex flex-1 items-center justify-between">
+                      <h5>{chat.name}</h5>
+                      <small className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-blue-500 text-white">
+                        {chat.unreadCount}
+                      </small>
+                    </div>
                   </Link>
                 ))
               ) : (
                 <p className="text-neutral-500">У вас пока нет чатов</p>
               )}
-            </div>
+            </>
           )}
         </div>
       </div>

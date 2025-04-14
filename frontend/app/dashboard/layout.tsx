@@ -7,9 +7,7 @@ import { cookies } from "next/headers";
 
 export default async function DashboardLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   const session = (await cookies()).get("session")?.value;
   const meData = await apiFetch("/me", {
     headers: {
@@ -32,9 +30,7 @@ export default async function DashboardLayout({
   return (
     <div className="flex h-screen">
       <div className="flex w-full max-w-[400px] flex-col border-r border-r-neutral-200">
-        <Suspense fallback={<Loading />}>
-          <LeftSidebar authUser={me} allchats={chatList} />
-        </Suspense>
+        <LeftSidebar authUser={me} allchats={chatList} />
       </div>
       {children}
     </div>

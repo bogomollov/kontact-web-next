@@ -8,27 +8,13 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes";
 import adminRoutes from "./routes/admin.routes";
 import chatRoutes from "./routes/chat.routes";
+import userRoutes from "./routes/user.routes";
 import { PrismaClient } from "./generated/prisma/client";
 import { isAuth } from "./middleware/auth";
-import { decrypt } from "./lib/session";
 
 const app = express();
 const router = express.Router();
 const prisma = new PrismaClient();
-
-app.use(
-  cors({
-    origin: ["http://localhost:3000", "*"],
-    credentials: true,
-    optionsSuccessStatus: 200,
-  })
-);
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
-app.use("/static", express.static("static"));
-app.use("/api", router, adminRoutes, chatRoutes);
-app.use("/api/auth", authRoutes);
 
 router.use(function (req, res, next) {
   console.log(
@@ -40,13 +26,39 @@ router.use(function (req, res, next) {
   return next();
 });
 
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
+app.use(express.json());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  "/static",
+  express.static("static", {
+    setHeaders: async (res, req, stat) => {
+      res.set("Cache-Control", "public, max-age=3600");
+    },
+  })
+);
+app.use("/api", router, adminRoutes, chatRoutes, userRoutes);
+app.use("/api/auth", authRoutes);
+
 router.get("/me", isAuth, async (req: Request, res: Response) => {
   try {
-    const session = req.headers["authorization"]?.split(" ")[1];
-    const payload = await decrypt(session);
-    const id = Number(payload?.sub);
+    const id = req.token?.id;
 
-    const data = await prisma.account.findUnique({
+    if (!id) {
+      res
+        .status(401)
+        .json({ message: "Ошибка при получении данных пользователя" });
+      return;
+    }
+
+    const dataUser = await prisma.account.findUnique({
       where: { user_id: id },
       select: {
         id: true,
@@ -59,16 +71,52 @@ router.get("/me", isAuth, async (req: Request, res: Response) => {
             id: true,
             firstName: true,
             lastName: true,
+            middleName: true,
+            department_id: true,
+            position_id: true,
           },
         },
       },
     });
+    const data = {
+      ...dataUser,
+      image: `/static/users/${dataUser?.id}.png`,
+    };
     res.json(data);
     return;
-  } catch (e) {
+  } catch {
+    console.error("Ошибка при получении данных пользователя");
     res.status(500).json({ error: "Ошибка сервера" });
     return;
   }
+});
+
+router.get("/departments", isAuth, async (req: Request, res: Response) => {
+  const id = req.token?.id;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "Ошибка при получении данных департаментов" });
+    return;
+  }
+
+  const data = await prisma.department.findMany();
+  res.json(data);
+  return;
+});
+
+router.get("/positions", isAuth, async (req: Request, res: Response) => {
+  const id = req.token?.id;
+
+  if (!id) {
+    res.status(401).json({ message: "Ошибка при получении данных должностей" });
+    return;
+  }
+
+  const data = await prisma.position.findMany();
+  res.json(data);
+  return;
 });
 
 app.listen(3001, () => {

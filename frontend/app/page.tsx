@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import preview from "@/preview.webp";
 import FAQ from "@/components/FAQ";
 import API from "@/components/API";
+import imageLoader from "@/lib/imageLoader";
 
 export default function Home() {
   return (
@@ -37,9 +37,12 @@ export default function Home() {
             <h4 className="text-neutral-500">Быстрый. Надежный. Простой.</h4>
           </div>
           <Image
-            src={preview}
+            loader={imageLoader}
+            src={"/static/preview.webp"}
             alt="preview-app"
             priority
+            width={1920}
+            height={1080}
             sizes="(max-width: 768px) 80vw, (max-width: 1200px) 100vw, 100vw"
             style={{
               borderRadius: "12px",

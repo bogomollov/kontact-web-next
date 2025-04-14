@@ -14,5 +14,6 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
     ...options,
     headers: newHeaders,
   });
+
   return res;
 };

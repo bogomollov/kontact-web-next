@@ -1,13 +1,12 @@
 "use client";
-
 import { useActionState } from "react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import InputLabel from "@/components/ui/InputLabel";
-import { updatePassword } from "@/actions/profile";
 import InputError from "../ui/InputError";
+import { IMe } from "@/types";
 
-export default function UpdatePasswordForm({ account }: { account: number }) {
+export default function UpdatePasswordForm({ authUser }: { authUser: IMe }) {
   const [state, action, pending] = useActionState(updatePassword, undefined);
 
   return (
@@ -17,7 +16,7 @@ export default function UpdatePasswordForm({ account }: { account: number }) {
     >
       <h4 className="font-medium">Изменить пароль</h4>
       <p className="text-neutral-500">Используйте длинный пароль</p>
-      <input type="hidden" name="account_id" value={account} />
+      <input type="hidden" name="account_id" value={authUser.id} />
       <div className="mt-2 space-y-3">
         <div className="flex flex-col gap-[8px]">
           <InputLabel htmlFor="currentPassword">Текущий пароль</InputLabel>

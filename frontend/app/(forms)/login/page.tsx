@@ -13,13 +13,13 @@ import { apiFetch } from "@/lib/apiFetch";
 export default function LoginForm() {
   const router = useRouter();
 
-  const [errors, setErrors] = useState<FormErrors>(undefined);
-  const [message, setMessage] = useState<string | undefined>(undefined);
-  const [pending, setPending] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [errors, setErrors] = useState<FormErrors>(undefined);
+  const [message, setMessage] = useState<string | undefined>(undefined);
+  const [pending, setPending] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

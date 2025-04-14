@@ -19,13 +19,15 @@ export async function encrypt(payload: SessionPayload) {
     .sign(encodedAccessKey);
 }
 
-export async function decrypt(session: string | undefined = "") {
+export async function decrypt(
+  session: string | undefined = ""
+): Promise<SessionPayload | null> {
   try {
     const { payload } = await jwtVerify(session, encodedAccessKey, {
       algorithms: ["HS256"],
       typ: "JWT",
     });
-    return payload;
+    return payload as SessionPayload;
   } catch (error) {
     console.log(`Failed to verify session: ${error}`);
     return null;
@@ -45,8 +47,4 @@ export async function createSession(
     sameSite: "lax",
     path: "/",
   });
-}
-
-export async function deleteSession(req: Request, res: Response) {
-  res.clearCookie("session");
 }

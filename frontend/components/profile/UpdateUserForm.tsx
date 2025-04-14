@@ -1,32 +1,71 @@
 "use client";
-import { updateUser } from "@/actions/profile";
-import { Account, User } from "@prisma/client";
-import { useActionState, useState } from "react";
 import Input from "../ui/Input";
 import InputLabel from "../ui/InputLabel";
 import Button from "../ui/Button";
-import Avatar from "../ui/Avatar";
 import InputError from "../ui/InputError";
+import { FormErrors, FormState, IMe } from "@/types";
+import imageLoader from "@/lib/imageLoader";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/apiFetch";
+import Image from "next/image";
 
-export default function UpdateUserAccount({
-  user,
-  account,
+export default function UpdateUserForm({
+  authUser,
   department,
   position,
 }: {
-  user: User;
-  account: Account;
+  authUser: IMe;
   department?: string;
   position?: string;
 }) {
-  const [state, action, pending] = useActionState(updateUser, undefined);
-  const [preview, setAvatarUrl] = useState<string>(
-    `/avatars/${account.id}.png`,
-  );
+  const router = useRouter();
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    image: null,
+  });
+  const [pending, setPending] = useState<boolean>(false);
+  const [errors, setErrors] = useState<FormErrors>(undefined);
+  const [message, setMessage] = useState<string | undefined>(undefined);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors(undefined);
+    setPending(true);
+    setMessage(undefined);
+
+    try {
+      const response = await apiFetch(`/users/${authUser.id}`, {
+        method: "PATCH",
+        body: JSON.stringify(formData),
+        credentials: "include",
+      });
+
+      const data: FormState = await response.json();
+
+      if (response.ok) {
+        router.refresh();
+      }
+      if (data?.errors) {
+        setErrors(data.errors);
+      }
+    } catch {
+      setMessage("Ошибка при подключении к серверу");
+    } finally {
+      setPending(false);
+    }
+  };
 
   return (
     <form
-      action={action}
+      onSubmit={handleSubmit}
       className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-6"
     >
       <div className="flex flex-col gap-[8px]">
@@ -34,25 +73,26 @@ export default function UpdateUserAccount({
         <p className="text-neutral-500">Обновите сведения своего профиля</p>
       </div>
       <div className="flex flex-col gap-2">
-        <Avatar
-          src={preview}
-          size={55}
+        <Image
+          loader={imageLoader}
+          src={`${authUser.image}`}
+          width={55}
+          height={55}
+          alt={`avatar ${authUser.id}`}
           className="h-[55px] w-[55px] cursor-pointer rounded-full border"
-          accountId={account.id}
-          onUploadSuccess={(url) => setAvatarUrl(url)}
         />
       </div>
-      <input type="hidden" name="account_id" value={account.id} />
       <div className="flex flex-col gap-[8px]">
         <InputLabel htmlFor="firstName">Имя</InputLabel>
         <Input
           id="firstName"
           type="text"
           name="firstName"
-          defaultValue={user.firstName}
+          onChange={handleChange}
+          defaultValue={formData.firstName}
           className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
         />
-        <InputError message={state?.errors.firstName} />
+        <InputError message={errors?.firstName} />
       </div>
       <div className="flex flex-col gap-[8px]">
         <InputLabel htmlFor="lastName">Фамилия</InputLabel>
@@ -60,10 +100,10 @@ export default function UpdateUserAccount({
           id="lastName"
           type="text"
           name="lastName"
-          defaultValue={user.lastName}
+          defaultValue={formData.lastName}
           className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
         />
-        <InputError message={state?.errors.lastName} />
+        <InputError message={errors?.lastName} />
       </div>
       <div className="flex flex-col gap-[8px]">
         <InputLabel htmlFor="middleName">Отчество</InputLabel>
@@ -71,10 +111,10 @@ export default function UpdateUserAccount({
           id="middleName"
           type="text"
           name="middleName"
-          defaultValue={user.middleName}
+          defaultValue={formData.middleName}
           className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
         />
-        <InputError message={state?.errors.middleName} />
+        <InputError message={errors?.middleName} />
       </div>
       <div className="flex flex-col gap-[8px]">
         <InputLabel>Сфера деятельности</InputLabel>

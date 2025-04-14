@@ -1,20 +1,43 @@
 import Link from "next/link";
-import UpdateUserData from "@/components/profile/UpdateUserForm";
-import UpdateAccountForm from "@/components/profile/UpdateAccountForm";
-import UpdatePasswordForm from "@/components/profile/UpdatePasswordForm";
-import DeleteAccountForm from "@/components/profile/DeleteAccountForm";
+import { IDepartment, IMe, IPosition } from "@/types";
+import { apiFetch } from "@/lib/apiFetch";
+import { cookies } from "next/headers";
+import UpdateUserForm from "@/components/profile/UpdateUserForm";
+// import UpdateAccountForm from "@/components/profile/UpdateAccountForm";
+// import UpdatePasswordForm from "@/components/profile/UpdatePasswordForm";
+// import DeleteAccountForm from "@/components/profile/DeleteAccountForm";
 
 export default async function Profile() {
-  // const user = await getUser();
-  // const account = await getAccount();
-  // const departments = await getDepartments();
-  // const positions = await getPositions();
+  const session = (await cookies()).get("session")?.value;
 
-  // if (!user || !account) return null;
+  const meData = await apiFetch("/me", {
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const me: IMe = (await meData.json()) as IMe;
 
-  // const isAdmin = account.role_id == 2;
+  const departmentData = await apiFetch("/departments", {
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const departments: IDepartment[] =
+    (await departmentData.json()) as IDepartment[];
 
-  const isAdmin = 2 == 2;
+  const positionData = await apiFetch("/positions", {
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const positions: IPosition[] = (await positionData.json()) as IPosition[];
+
+  if (!me) return null;
+
+  const isAdmin = me.role_id === 2;
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-neutral-50 pb-[100px]">
@@ -67,17 +90,16 @@ export default async function Profile() {
         <h5 className="text-gray-600">Управляйте своими данными в один клик</h5>
       </div>
       <div className="mt-6 grid w-full max-w-sm gap-7 md:grid-cols-1">
-        {/* <UpdateUserData
-          user={user}
-          account={account}
+        <UpdateUserForm
+          authUser={me}
           department={
-            departments.find((d) => d.id === user.department_id)?.name
+            departments.find((d) => d.id === me.user.department_id)?.name
           }
-          position={positions.find((p) => p.id === user.position_id)?.name}
+          position={positions.find((p) => p.id === me.user.position_id)?.name}
         />
-        <UpdateAccountForm account={account} />
-        <UpdatePasswordForm account={account.id} />
-        <DeleteAccountForm account={account.id} /> */}
+        {/* <UpdateAccountForm authUser={me} />
+        <UpdatePasswordForm authUser={me} />
+        <DeleteAccountForm authUser={me} /> */}
       </div>
     </div>
   );

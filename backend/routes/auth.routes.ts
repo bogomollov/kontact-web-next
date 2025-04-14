@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { PrismaClient } from "../generated/prisma/client";
 import { compare, genSaltSync, hashSync } from "bcrypt-ts";
-import { createSession, deleteSession } from "../lib/session";
+import { createSession } from "../lib/session";
 import { LoginFormSchema, RegisterFormSchema } from "../lib/validation";
 import { z } from "zod";
 
@@ -156,7 +156,10 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 router.post("/logout", async (req: Request, res: Response) => {
-  await deleteSession(req, res);
+  res.clearCookie("session");
+  req.token = undefined;
+  res.json({ message: "Токен удален" });
+  return;
 });
 
 export default router;

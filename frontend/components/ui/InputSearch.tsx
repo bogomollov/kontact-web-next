@@ -1,21 +1,18 @@
 "use client";
-
 import { apiFetch } from "@/lib/apiFetch";
 import { InputHTMLAttributes, useEffect, useState } from "react";
+import Input from "./Input";
+import { IChatListItem } from "@/types";
 
 interface InputSearchProps extends InputHTMLAttributes<HTMLInputElement> {
-  searchUrl: string;
-  callbackData: (data: any) => void;
+  callbackData: (data: IChatListItem[] | null) => void;
 }
-
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function InputSearch({
   id,
   name,
   className,
   placeholder,
-  searchUrl,
   callbackData,
   ...props
 }: InputSearchProps) {
@@ -23,28 +20,26 @@ export default function InputSearch({
 
   useEffect(() => {
     if (!query) {
-      callbackData([]);
+      callbackData(null);
       return;
     }
 
     const searchData = async () => {
       try {
-        const response = await apiFetch(
-          `/chats/search?query=${encodeURIComponent(query)}`,
-          {
-            credentials: "include",
-          },
-        );
-        const data = await response.json();
+        const response = await apiFetch(`/chats/search?query=${query}`, {
+          credentials: "include",
+        });
+        const data = (await response.json()) as IChatListItem[];
         callbackData(data);
       } catch (e) {
         console.log("Ошибка поиска", e);
+        callbackData([]);
       }
     };
 
     const delay = setTimeout(searchData, 500);
     return () => clearTimeout(delay);
-  }, [query]);
+  }, [query, callbackData]);
 
   return (
     <div className={`relative flex items-center ${className}`}>
@@ -64,7 +59,7 @@ export default function InputSearch({
           strokeLinejoin="round"
         />
       </svg>
-      <input
+      <Input
         id={id}
         name={name}
         type="search"

@@ -1,12 +1,39 @@
 import { NextFunction, Request, Response } from "express";
-import { decrypt } from "../lib/session";
+import { decrypt, SessionPayload } from "../lib/session";
 
-export async function isAuth(req: Request, res: Response, next: NextFunction) {
+declare global {
+  namespace Express {
+    interface Request {
+      token?: SessionPayload;
+    }
+  }
+}
+
+export async function isAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   const session = req.headers["authorization"]?.split(" ")[1];
-  const payload = await decrypt(session || req.cookies.session);
-  if (!payload) {
-    res.status(403).json({ message: "Доступ запрещен" });
+  const token = session || req.cookies.session;
+
+  if (!token) {
+    res.status(401).json({ message: "Требуется авторизация" });
     return;
   }
-  return next();
+  try {
+    const payload = (await decrypt(token)) as SessionPayload;
+    if (!payload) {
+      res
+        .status(403)
+        .json({ message: "Доступ запрещен: недействительный токен" });
+      return;
+    }
+    req.token = payload;
+    next();
+  } catch (error) {
+    console.error("Ошибка при расшифровке токена:", error);
+    res.status(403).json({ message: "Доступ запрещен: ошибка токена" });
+    return;
+  }
 }

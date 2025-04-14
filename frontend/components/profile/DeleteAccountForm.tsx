@@ -1,7 +1,8 @@
 "use client";
+import { IMe } from "@/types";
 import Button from "../ui/Button";
 
-export default function DeleteAccountForm({ account }: { account: number }) {
+export default function DeleteAccountForm({ authUser }: { authUser: IMe }) {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-6">
       <div className="flex flex-col gap-[8px]">

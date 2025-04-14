@@ -1,14 +1,12 @@
 "use client";
-
 import { useActionState } from "react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import InputLabel from "@/components/ui/InputLabel";
-import { updateAccount } from "@/actions/profile";
-import { Account } from "@prisma/client";
 import InputError from "../ui/InputError";
+import { IMe } from "@/types";
 
-export default function UpdateAccountForm({ account }: { account: Account }) {
+export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
   const [state, action, pending] = useActionState(updateAccount, undefined);
 
   return (
@@ -18,7 +16,7 @@ export default function UpdateAccountForm({ account }: { account: Account }) {
     >
       <h4 className="font-medium">Данные аккаунта</h4>
       <p className="text-neutral-500">Измените данные своего аккаунта</p>
-      <input type="hidden" name="account_id" value={account.id} />
+      <input type="hidden" name="account_id" value={authUser.id} />
       <div className="mt space-y-3">
         <div className="flex flex-col gap-[8px]">
           <InputLabel htmlFor="username">Отображаемое имя</InputLabel>
