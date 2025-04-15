@@ -19,6 +19,7 @@ export default async function Profile() {
   const me: IMe = (await meData.json()) as IMe;
 
   const departmentData = await apiFetch("/departments", {
+    cache: "force-cache",
     headers: {
       Authorization: `Bearer ${session}`,
     },
@@ -28,6 +29,7 @@ export default async function Profile() {
     (await departmentData.json()) as IDepartment[];
 
   const positionData = await apiFetch("/positions", {
+    cache: "force-cache",
     headers: {
       Authorization: `Bearer ${session}`,
     },

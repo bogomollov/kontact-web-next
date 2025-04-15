@@ -5,10 +5,18 @@ import Button from "../ui/Button";
 import InputError from "../ui/InputError";
 import { FormErrors, FormState, IMe } from "@/types";
 import imageLoader from "@/lib/imageLoader";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/apiFetch";
 import Image from "next/image";
+
+interface FormData {
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  image: string | undefined;
+  newImage: File | null;
+}
 
 export default function UpdateUserForm({
   authUser,
@@ -20,12 +28,14 @@ export default function UpdateUserForm({
   position?: string;
 }) {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    middleName: "",
-    image: null,
+  const [formData, setFormData] = useState<FormData>({
+    firstName: authUser.user.firstName,
+    lastName: authUser.user.lastName,
+    middleName: authUser.user.middleName,
+    image: authUser.image,
+    newImage: null,
   });
   const [pending, setPending] = useState<boolean>(false);
   const [errors, setErrors] = useState<FormErrors>(undefined);
@@ -35,26 +45,49 @@ export default function UpdateUserForm({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData({ ...formData, newImage: file });
+    }
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors(undefined);
     setPending(true);
     setMessage(undefined);
 
+    const data = new FormData();
+    data.append("firstName", formData.firstName);
+    data.append("lastName", formData.lastName);
+    data.append("middleName", formData.middleName);
+
+    if (formData.newImage) {
+      data.append("image", formData.newImage);
+    }
+
     try {
       const response = await apiFetch(`/users/${authUser.id}`, {
         method: "PATCH",
-        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        body: data,
         credentials: "include",
       });
 
-      const data: FormState = await response.json();
+      const responseData: FormState = await response.json();
 
       if (response.ok) {
         router.refresh();
       }
-      if (data?.errors) {
-        setErrors(data.errors);
+      if (responseData?.errors) {
+        setErrors(responseData.errors);
       }
     } catch {
       setMessage("Ошибка при подключении к серверу");
@@ -67,6 +100,7 @@ export default function UpdateUserForm({
     <form
       onSubmit={handleSubmit}
       className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-6"
+      encType="multipart/form-data"
     >
       <div className="flex flex-col gap-[8px]">
         <h4 className="font-medium">Информация профиля</h4>
@@ -75,11 +109,25 @@ export default function UpdateUserForm({
       <div className="flex flex-col gap-2">
         <Image
           loader={imageLoader}
-          src={`${authUser.image}`}
+          src={
+            formData.newImage
+              ? URL.createObjectURL(formData.newImage)
+              : `${formData.image}`
+          }
           width={55}
           height={55}
           alt={`avatar ${authUser.id}`}
           className="h-[55px] w-[55px] cursor-pointer rounded-full border"
+          onClick={handleAvatarClick}
+        />
+        <Input
+          id="image"
+          type="file"
+          name="image"
+          accept="image/png, image/jpeg"
+          onChange={handleImageChange}
+          className="hidden"
+          ref={fileInputRef}
         />
       </div>
       <div className="flex flex-col gap-[8px]">

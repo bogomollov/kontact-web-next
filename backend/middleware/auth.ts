@@ -21,6 +21,7 @@ export async function isAuth(
     res.status(401).json({ message: "Требуется авторизация" });
     return;
   }
+
   try {
     const payload = (await decrypt(token)) as SessionPayload;
     if (!payload) {

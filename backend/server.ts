@@ -5,10 +5,10 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 import express, { Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import userRoutes from "./routes/user.routes";
 import authRoutes from "./routes/auth.routes";
 import adminRoutes from "./routes/admin.routes";
 import chatRoutes from "./routes/chat.routes";
-import userRoutes from "./routes/user.routes";
 import { PrismaClient } from "./generated/prisma/client";
 import { isAuth } from "./middleware/auth";
 
@@ -23,7 +23,7 @@ router.use(function (req, res, next) {
     decodeURIComponent(req.url),
     res.statusCode
   );
-  return next();
+  next();
 });
 
 app.use(
@@ -33,9 +33,8 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
-app.use(express.json());
+
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
 app.use(
   "/static",
   express.static("static", {
@@ -44,7 +43,11 @@ app.use(
     },
   })
 );
-app.use("/api", router, adminRoutes, chatRoutes, userRoutes);
+
+app.use("/api", userRoutes);
+app.use("/api", adminRoutes);
+app.use("/api", chatRoutes);
+app.use("/api", router);
 app.use("/api/auth", authRoutes);
 
 router.get("/me", isAuth, async (req: Request, res: Response) => {
