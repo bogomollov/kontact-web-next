@@ -6,8 +6,9 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.routes";
-import authRoutes from "./routes/auth.routes";
+import accountRoutes from "./routes/account.routes";
 import adminRoutes from "./routes/admin.routes";
+import authRoutes from "./routes/auth.routes";
 import chatRoutes from "./routes/chat.routes";
 import { PrismaClient } from "./generated/prisma/client";
 import { isAuth } from "./middleware/auth";
@@ -33,21 +34,19 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
-
+app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 app.use(
   "/static",
   express.static("static", {
     setHeaders: async (res, req, stat) => {
-      res.set("Cache-Control", "public, max-age=3600");
+      res.set("Cache-Control", "private, max-age=3600, no-cache");
     },
   })
 );
 
-app.use("/api", userRoutes);
-app.use("/api", adminRoutes);
-app.use("/api", chatRoutes);
-app.use("/api", router);
+app.use("/api", router, userRoutes, accountRoutes, adminRoutes, chatRoutes);
 app.use("/api/auth", authRoutes);
 
 router.get("/me", isAuth, async (req: Request, res: Response) => {
@@ -92,6 +91,34 @@ router.get("/me", isAuth, async (req: Request, res: Response) => {
     res.status(500).json({ error: "Ошибка сервера" });
     return;
   }
+});
+
+router.get("/accounts", isAuth, async (req: Request, res: Response) => {
+  const id = req.token?.id;
+
+  if (!id) {
+    res.status(401).json({ message: "Ошибка при получении данных аккаунтов" });
+    return;
+  }
+
+  const data = await prisma.account.findMany();
+  res.json(data);
+  return;
+});
+
+router.get("/users", isAuth, async (req: Request, res: Response) => {
+  const id = req.token?.id;
+
+  if (!id) {
+    res
+      .status(401)
+      .json({ message: "Ошибка при получении данных пользователей" });
+    return;
+  }
+
+  const data = await prisma.user.findMany();
+  res.json(data);
+  return;
 });
 
 router.get("/departments", isAuth, async (req: Request, res: Response) => {

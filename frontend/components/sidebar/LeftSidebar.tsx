@@ -18,6 +18,7 @@ export function LeftSidebar({
   const pathname = usePathname();
   const router = useRouter();
 
+  const [image, setImage] = useState<string | undefined>(authUser.image);
   const [chats, setChats] = useState<IChatListItem[]>(allchats);
   const [searchResults, setSearchResults] = useState<IChatListItem[] | null>(
     null,
@@ -27,6 +28,9 @@ export function LeftSidebar({
   const handleLogout = async () => {
     const res = await apiFetch("/auth/logout", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       credentials: "include",
     });
     if (res.ok) {
@@ -48,11 +52,12 @@ export function LeftSidebar({
               <div className="relative">
                 <Image
                   loader={imageLoader}
-                  src={`${authUser.image}`}
+                  src={`${image}`}
                   width={55}
                   height={55}
                   alt={`avatar ${authUser.id}`}
-                  className="rounded-full border"
+                  className="h-[55px] w-[55px] cursor-pointer rounded-full border"
+                  onError={() => setImage("/static/null.png")}
                 />
                 <div className="absolute right-1 bottom-1 h-[12px] w-[12px] rounded-full border border-white bg-blue-500"></div>
               </div>
@@ -142,7 +147,7 @@ export function LeftSidebar({
                       width={55}
                       height={55}
                       alt={`avatar ${user.id}`}
-                      className="rounded-full"
+                      className="h-[55px] w-[55px] rounded-full"
                     />
                     <div className="flex flex-1 items-center justify-between">
                       <h5>{user.name}</h5>
@@ -173,7 +178,7 @@ export function LeftSidebar({
                       width={55}
                       height={55}
                       alt={`chat avatars ${chat.id}`}
-                      className="rounded-full"
+                      className="h-[55px] w-[55px] rounded-full"
                     />
                     <div className="flex flex-1 items-center justify-between">
                       <h5>{chat.name}</h5>

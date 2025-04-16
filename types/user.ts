@@ -1,3 +1,12 @@
+export interface IUser {
+  id: number;
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  department_id: number;
+  position_id: number;
+}
+
 export interface IMe {
   id: number;
   username: string;

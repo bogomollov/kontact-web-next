@@ -1,22 +1,72 @@
 "use client";
-import { useActionState } from "react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import InputLabel from "@/components/ui/InputLabel";
 import InputError from "../ui/InputError";
-import { IMe } from "@/types";
+import { FormErrors, FormState, IMe } from "@/types";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { apiFetch } from "@/lib/apiFetch";
+
+interface FormData {
+  username: string;
+  email: string;
+  phone: string;
+}
 
 export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
-  const [state, action, pending] = useActionState(updateAccount, undefined);
+  const router = useRouter();
+  const [formData, setFormData] = useState<FormData>({
+    username: authUser.username,
+    email: authUser.email,
+    phone: authUser.phone,
+  });
+  const [pending, setPending] = useState<boolean>(false);
+  const [errors, setErrors] = useState<FormErrors>(undefined);
+  const [message, setMessage] = useState<string | undefined>(undefined);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors(undefined);
+    setPending(true);
+    setMessage(undefined);
+
+    try {
+      const response = await apiFetch(`/accounts/${authUser.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+        credentials: "include",
+      });
+
+      const responseData: FormState = await response.json();
+
+      if (response.ok) {
+        router.refresh();
+      }
+      if (responseData?.errors) {
+        setErrors(responseData.errors);
+      }
+    } catch {
+      setMessage("Ошибка при подключении к серверу");
+    } finally {
+      setPending(false);
+    }
+  };
 
   return (
     <form
-      action={action}
+      onSubmit={handleSubmit}
       className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-6"
     >
       <h4 className="font-medium">Данные аккаунта</h4>
       <p className="text-neutral-500">Измените данные своего аккаунта</p>
-      <input type="hidden" name="account_id" value={authUser.id} />
       <div className="mt space-y-3">
         <div className="flex flex-col gap-[8px]">
           <InputLabel htmlFor="username">Отображаемое имя</InputLabel>
@@ -25,9 +75,10 @@ export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
             name="username"
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Отображаемое имя"
-            defaultValue={account.username}
+            defaultValue={formData.username}
+            onChange={handleChange}
           />
-          <InputError message={state?.errors?.username} />
+          <InputError message={errors?.username} />
         </div>
         <div className="flex flex-col gap-[8px]">
           <InputLabel htmlFor="email">Эл.почта</InputLabel>
@@ -36,9 +87,10 @@ export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
             name="email"
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Электронная почта"
-            defaultValue={account.email || undefined}
+            defaultValue={formData.email}
+            onChange={handleChange}
           />
-          <InputError message={state?.errors.email} />
+          <InputError message={errors?.email} />
         </div>
         <div className="flex flex-col gap-[8px]">
           <InputLabel htmlFor="phone">Номер телефона</InputLabel>
@@ -47,18 +99,20 @@ export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
             name="phone"
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Номер телефона"
-            defaultValue={account.phone || undefined}
+            defaultValue={formData.phone}
+            onChange={handleChange}
           />
-          <InputError message={state?.errors.phone} />
+          <InputError message={errors?.phone} />
         </div>
-        <Button
-          type="submit"
-          disabled={pending}
-          className="mt-4 w-full rounded-md bg-blue-500 text-white disabled:bg-blue-500/80"
-        >
-          Сохранить изменения
-        </Button>
+        <InputError message={message} />
       </div>
+      <Button
+        type="submit"
+        disabled={pending}
+        className="mt-4 w-full rounded-md bg-blue-500 text-white disabled:bg-blue-500/80"
+      >
+        Сохранить изменения
+      </Button>
     </form>
   );
 }

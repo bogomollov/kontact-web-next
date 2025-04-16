@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-import Loading from "./loading";
 import { LeftSidebar } from "@/components/sidebar/LeftSidebar";
 import { apiFetch } from "@/lib/apiFetch";
 import { IChatListItem, IMe } from "@/types";
@@ -9,6 +7,7 @@ export default async function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = (await cookies()).get("session")?.value;
+
   const meData = await apiFetch("/me", {
     headers: {
       Authorization: `Bearer ${session}`,

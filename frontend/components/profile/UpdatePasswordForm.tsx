@@ -1,33 +1,84 @@
 "use client";
-import { useActionState } from "react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import InputLabel from "@/components/ui/InputLabel";
 import InputError from "../ui/InputError";
-import { IMe } from "@/types";
+import { FormErrors, FormState, IMe } from "@/types";
+import { apiFetch } from "@/lib/apiFetch";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+interface FormData {
+  password: string;
+  newPassword: string;
+  repeatPassword: string;
+}
 
 export default function UpdatePasswordForm({ authUser }: { authUser: IMe }) {
-  const [state, action, pending] = useActionState(updatePassword, undefined);
+  const router = useRouter();
+  const [formData, setFormData] = useState<FormData>({
+    password: "",
+    newPassword: "",
+    repeatPassword: "",
+  });
+  const [pending, setPending] = useState<boolean>(false);
+  const [errors, setErrors] = useState<FormErrors>(undefined);
+  const [message, setMessage] = useState<string | undefined>(undefined);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors(undefined);
+    setPending(true);
+    setMessage(undefined);
+
+    try {
+      const response = await apiFetch(`/accounts/${authUser.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+        credentials: "include",
+      });
+
+      const responseData: FormState = await response.json();
+
+      if (response.ok) {
+        router.refresh();
+      }
+      if (responseData?.errors) {
+        setErrors(responseData.errors);
+      }
+    } catch {
+      setMessage("Ошибка при подключении к серверу");
+    } finally {
+      setPending(false);
+    }
+  };
 
   return (
     <form
-      action={action}
+      onSubmit={handleSubmit}
       className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-6"
     >
       <h4 className="font-medium">Изменить пароль</h4>
       <p className="text-neutral-500">Используйте длинный пароль</p>
-      <input type="hidden" name="account_id" value={authUser.id} />
       <div className="mt-2 space-y-3">
         <div className="flex flex-col gap-[8px]">
-          <InputLabel htmlFor="currentPassword">Текущий пароль</InputLabel>
+          <InputLabel htmlFor="password">Текущий пароль</InputLabel>
           <Input
-            id="currentPassword"
-            name="currentPassword"
+            id="password"
+            name="password"
             type="password"
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Введите существующий пароль"
+            onChange={handleChange}
           />
-          <InputError message={state?.errors?.currentPassword} />
+          <InputError message={errors?.currentPassword} />
         </div>
         <div className="flex flex-col gap-[8px]">
           <InputLabel htmlFor="newPassword">Новый пароль</InputLabel>
@@ -37,8 +88,9 @@ export default function UpdatePasswordForm({ authUser }: { authUser: IMe }) {
             type="password"
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Придумайте безопасный пароль"
+            onChange={handleChange}
           />
-          <InputError message={state?.errors?.newPassword} />
+          <InputError message={errors?.newPassword} />
         </div>
         <div className="flex flex-col gap-[8px]">
           <InputLabel htmlFor="repeatPassword">Подтверждение пароля</InputLabel>
@@ -48,10 +100,11 @@ export default function UpdatePasswordForm({ authUser }: { authUser: IMe }) {
             type="password"
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Повторите новый пароль"
+            onChange={handleChange}
           />
-          <InputError message={state?.errors?.repeatPassword} />
+          <InputError message={errors?.repeatPassword} />
         </div>
-        <InputError message={state?.message} />
+        <InputError message={message} />
       </div>
       <Button
         type="submit"

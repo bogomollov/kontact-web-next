@@ -1,13 +1,44 @@
-// import { prisma } from "@/prisma/client";
-// import { Account, Department, Position, User } from "@prisma/client";
+import { apiFetch } from "@/lib/apiFetch";
+import { IAccount, IDepartment, IPosition, IUser } from "@/types";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import React from "react";
 
 export default async function Admin() {
-  // const accounts = await prisma.account.findMany();
-  // const users = await prisma.user.findMany();
-  // const departments = await prisma.department.findMany();
-  // const positions = await prisma.position.findMany();
+  const session = (await cookies()).get("session")?.value;
+
+  const accountsData = await apiFetch("/accounts", {
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const accounts: IAccount[] = (await accountsData.json()) as IAccount[];
+
+  const usersData = await apiFetch("/users", {
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const users: IUser[] = (await usersData.json()) as IUser[];
+
+  const departmentsData = await apiFetch("/departments", {
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const departments: IDepartment[] =
+    (await departmentsData.json()) as IDepartment[];
+
+  const positionsData = await apiFetch("/positions", {
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const positions: IPosition[] = (await positionsData.json()) as IPosition[];
 
   return (
     <div className="flex min-h-screen flex-col items-center gap-[20px] bg-neutral-50 pb-[100px]">
@@ -52,11 +83,11 @@ export default async function Admin() {
                 <a className="text-center font-medium">email</a>
                 <a className="text-center font-medium">phone</a>
                 <a className="rounded-tr-[10px] text-center font-medium">
-                  role
+                  role_id
                 </a>
               </div>
-              {/* <div className="grid grid-cols-6 py-[5px]">
-                {accounts.map((account: Account) => (
+              <div className="grid grid-cols-6 py-[5px]">
+                {accounts.map((account: IAccount) => (
                   <React.Fragment key={account.id}>
                     <p className="py-[5px] text-center">{account.id}</p>
                     <p className="py-[5px] text-center">{account.user_id}</p>
@@ -70,7 +101,7 @@ export default async function Admin() {
                     <p className="py-[5px] text-center">{account.role_id}</p>
                   </React.Fragment>
                 ))}
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
@@ -91,8 +122,8 @@ export default async function Admin() {
                   position_id
                 </a>
               </div>
-              {/* <div className="grid grid-cols-6 py-[8px]">
-                {users.map((user: User) => (
+              <div className="grid grid-cols-6 py-[8px]">
+                {users.map((user: IUser) => (
                   <React.Fragment key={user.id}>
                     <p className="py-[5px] text-center">{user.id}</p>
                     <p className="py-[5px] text-center">{user.firstName}</p>
@@ -102,7 +133,7 @@ export default async function Admin() {
                     <p className="py-[5px] text-center">{user.position_id}</p>
                   </React.Fragment>
                 ))}
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
@@ -120,12 +151,12 @@ export default async function Admin() {
                 </a>
               </div>
               <div className="grid grid-cols-2 py-[8px]">
-                {/* {departments.map((department: Department) => (
+                {departments.map((department: IDepartment) => (
                   <React.Fragment key={department.id}>
                     <p className="py-[5px] text-center">{department.id}</p>
                     <p className="py-[5px] text-center">{department.name}</p>
                   </React.Fragment>
-                ))} */}
+                ))}
               </div>
             </div>
           </div>
@@ -144,12 +175,12 @@ export default async function Admin() {
                 </a>
               </div>
               <div className="grid grid-cols-2 py-[8px]">
-                {/* {positions.map((position: Position) => (
+                {positions.map((position: IPosition) => (
                   <React.Fragment key={position.id}>
                     <p className="py-[5px] text-center">{position.id}</p>
                     <p className="py-[5px] text-center">{position.name}</p>
                   </React.Fragment>
-                ))} */}
+                ))}
               </div>
             </div>
           </div>

@@ -1,8 +1,9 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { Request, Response } from "express";
+import fs from "fs/promises";
+import sharp from "sharp";
 import multer from "multer";
 import { PrismaClient } from "../generated/prisma/client";
 import path from "path";
-import util from "util";
 import { isAuth } from "../middleware/auth";
 
 const prisma = new PrismaClient();
@@ -19,23 +20,27 @@ const upload = multer({
   storage: storage,
   limits: { fileSize: 10 * 1024 * 1024 },
 }).single("image");
-const uploadPromise = util.promisify(upload);
 
 router.patch(
   "/users/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
-    await isAuth(req, res, next);
-  },
+  isAuth,
   upload,
   async (req: Request, res: Response) => {
-    console.log("req.body после multer:", req.body);
-    console.log("req.file:", req.file);
     const pathId = req.params.id;
     const id = req?.token?.id;
 
     if (!pathId) {
       res.status(401).json({ message: "Не указан идентификатор пользователя" });
       return;
+    }
+
+    const { firstName, lastName, middleName } = req.body;
+    const imageFile = req.file as Express.Multer.File | undefined;
+
+    if (!firstName && !lastName && !middleName && !imageFile) {
+      res
+        .status(409)
+        .json({ message: "Укажите хотя бы одно поле для обновления" });
     }
 
     try {
@@ -47,16 +52,21 @@ router.patch(
         return;
       }
 
-      const { firstName, lastName, middleName } = req.body;
-      const imageFile = req.file as Express.Multer.File | undefined;
-
       const updateData: any = {};
       if (firstName) updateData.firstName = firstName;
       if (lastName) updateData.lastName = lastName;
       if (middleName) updateData.middleName = middleName;
       if (imageFile) {
-        console.log("Загруженный файл:", imageFile);
-        updateData.image = `/static/users/${imageFile.filename}`;
+        const input = path.join(
+          __dirname,
+          "../static/users",
+          imageFile.filename
+        );
+        const newFilename = `${req.token?.id}.png`;
+        const output = path.join(__dirname, "../static/users", newFilename);
+
+        await sharp(input).png().toFile(output);
+        fs.unlink(input);
       }
 
       const updatedUser = await prisma.user.update({

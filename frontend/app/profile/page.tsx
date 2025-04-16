@@ -3,9 +3,9 @@ import { IDepartment, IMe, IPosition } from "@/types";
 import { apiFetch } from "@/lib/apiFetch";
 import { cookies } from "next/headers";
 import UpdateUserForm from "@/components/profile/UpdateUserForm";
-// import UpdateAccountForm from "@/components/profile/UpdateAccountForm";
-// import UpdatePasswordForm from "@/components/profile/UpdatePasswordForm";
-// import DeleteAccountForm from "@/components/profile/DeleteAccountForm";
+import UpdateAccountForm from "@/components/profile/UpdateAccountForm";
+import UpdatePasswordForm from "@/components/profile/UpdatePasswordForm";
+import DeleteAccountForm from "@/components/profile/DeleteAccountForm";
 
 export default async function Profile() {
   const session = (await cookies()).get("session")?.value;
@@ -99,9 +99,9 @@ export default async function Profile() {
           }
           position={positions.find((p) => p.id === me.user.position_id)?.name}
         />
-        {/* <UpdateAccountForm authUser={me} />
+        <UpdateAccountForm authUser={me} />
         <UpdatePasswordForm authUser={me} />
-        <DeleteAccountForm authUser={me} /> */}
+        <DeleteAccountForm authUser={me} />
       </div>
     </div>
   );

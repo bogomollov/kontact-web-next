@@ -74,9 +74,6 @@ export default function UpdateUserForm({
     try {
       const response = await apiFetch(`/users/${authUser.id}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
         body: data,
         credentials: "include",
       });
@@ -119,6 +116,9 @@ export default function UpdateUserForm({
           alt={`avatar ${authUser.id}`}
           className="h-[55px] w-[55px] cursor-pointer rounded-full border"
           onClick={handleAvatarClick}
+          onError={() =>
+            setFormData({ ...formData, image: "/static/null.png" })
+          }
         />
         <Input
           id="image"
