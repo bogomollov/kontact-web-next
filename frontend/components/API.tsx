@@ -11,12 +11,13 @@ export default function API() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await apiFetch("/users/search?query=Виктор");
+      const res = await apiFetch("/chats/search?query=Виктор", {
+        credentials: "include",
+      });
       const data = await res.json();
       setResponse({ data, status: res.status });
     } catch (error) {
       console.log(error);
-      setResponse({ error: "Ошибка запроса. Попробуйте снова." });
     } finally {
       setLoading(false);
     }
@@ -42,7 +43,7 @@ export default function API() {
 
       <Table
         method="GET"
-        url="/api/search?"
+        url="/api/chats/search?"
         description="поиск сотрудника"
         body={
           <>
@@ -50,22 +51,27 @@ export default function API() {
               GET /api/search?query=Виктор HTTP/1.1
             </span>
             <br />
-            Authorization:{" "}
-            <span className="text-blue-500">
-              Bearer Pm7gdycNeHV_F1y4_tjWWIutC0Aq0gwl9wRnX-KBuHw
-            </span>
-            <br />
-            Content-Type:{" "}
-            <span className="text-blue-500">
-              application/json; charset=utf-8
-            </span>
-            <br />
-            Connection: <span className="text-blue-500">close</span>
-            <br />
-            User-Agent: 
-            <span className="text-blue-500">
-              Mozilla/5.0 (Windows NT 10.0; Win64; x64)
-            </span>
+            <div className="flex gap-[8px]">
+              Authorization:
+              <span className="flex gap-[8px] text-blue-500">
+                Bearer ******************
+              </span>
+            </div>
+            <div className="flex gap-[8px]">
+              Content-Type:
+              <span className="text-blue-500">
+                application/json; charset=utf-8
+              </span>
+            </div>
+            <div className="flex gap-[8px]">
+              Connection: <span className="text-blue-500">close</span>
+            </div>
+            <div className="flex gap-[8px]">
+              User-Agent:  
+              <span className="text-blue-500">
+                Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+              </span>
+            </div>
           </>
         }
         status_response={response.status}

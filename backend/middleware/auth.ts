@@ -25,9 +25,7 @@ export async function isAuth(
   try {
     const payload = (await decrypt(token)) as SessionPayload;
     if (!payload) {
-      res
-        .status(403)
-        .json({ message: "Доступ запрещен: недействительный токен" });
+      res.status(403).json({ message: "Недействительный токен" });
       return;
     }
     req.token = payload;

@@ -135,24 +135,24 @@ export function LeftSidebar({
           {isSearching ? (
             <>
               {searchResults && searchResults.length > 0 ? (
-                searchResults.map((user) => (
+                searchResults.map((chat) => (
                   <Link
-                    key={user.id}
-                    href={`/dashboard/${user.id}`}
+                    key={chat.id}
+                    href={`/dashboard/${chat.id}`}
                     className={`flex items-center gap-[20px] rounded-[10px] px-[20px] py-[10px]`}
                   >
                     <Image
                       loader={imageLoader}
-                      src={`${user.image}`}
+                      src={`${chat.image}`}
                       width={55}
                       height={55}
-                      alt={`avatar ${user.id}`}
+                      alt={`avatar ${chat.id}`}
                       className="h-[55px] w-[55px] rounded-full"
                     />
                     <div className="flex flex-1 items-center justify-between">
-                      <h5>{user.name}</h5>
+                      <h5>{chat.name}</h5>
                       <small className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-blue-500 text-white">
-                        {user.unreadCount}
+                        {chat.unreadCount}
                       </small>
                     </div>
                   </Link>

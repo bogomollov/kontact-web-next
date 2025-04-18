@@ -1,28 +1,16 @@
 "use client";
+import { useState } from "react";
 
-import { sendMessage } from "@/actions/chat";
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-
-export default function ChatForm({ chat_id }: { chat_id: number }) {
+export default function ChatForm({ chat }: { chat: any }) {
   const [message, setMessage] = useState("");
-  const [isPending, startTransition] = useTransition();
-  const router = useRouter();
+  const [pending, isPending] = useState<boolean>(false);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
+    isPending(true);
 
     if (!message.trim()) return;
     setMessage("");
-
-    startTransition(async () => {
-      try {
-        await sendMessage(Number(chat_id), message);
-        router.refresh();
-      } catch (err) {
-        console.log(`Ошибка отправки сообщения: ${err}`);
-      }
-    });
   };
 
   return (
@@ -42,7 +30,7 @@ export default function ChatForm({ chat_id }: { chat_id: number }) {
             required
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            disabled={isPending}
+            disabled={pending}
           />
           <div className="inline-flex justify-between">
             <div className="inline-flex gap-[15px]">
