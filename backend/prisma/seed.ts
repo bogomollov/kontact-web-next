@@ -170,6 +170,15 @@ async function main() {
       content: "Это тестовое сообщение в групповом чате",
     },
   });
+  await prisma.message.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      chat_id: chatPrivate.id,
+      sender_id: admin.id,
+      content: "Это тестовое сообщение в личном чате",
+    },
+  });
 }
 main()
   .then(async () => {

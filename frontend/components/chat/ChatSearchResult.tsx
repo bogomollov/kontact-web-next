@@ -1,33 +1,30 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import imageLoader from "@/lib/imageLoader";
 import { IChatSearchListItem } from "@/types";
+import { apiFetch } from "@/lib/apiFetch";
 
 interface UserSearchResultProps {
   user: IChatSearchListItem;
-  onCloseSearch: () => void;
 }
 
-export function UserSearchResult({
-  user,
-  onCloseSearch,
-}: UserSearchResultProps) {
+export function UserSearchResult({ user }: UserSearchResultProps) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleUserClick = async () => {
-    onCloseSearch();
-
     if (user.chat_id) {
       router.push(`/dashboard/${user.chat_id}`);
     } else {
       try {
-        const response = await fetch("/api/chats", {
+        const response = await apiFetch("/chats", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({ user_id: user.id }),
         });
 
@@ -47,7 +44,7 @@ export function UserSearchResult({
   return (
     <div
       onClick={handleUserClick}
-      className="flex cursor-pointer items-center gap-[20px] rounded-[10px] px-[20px] py-[10px] hover:bg-neutral-50"
+      className={`flex cursor-pointer items-center gap-[20px] rounded-[10px] px-[20px] py-[10px] ${pathname == `/dashboard/${user.chat_id}` ? "bg-neutral-100" : "hover:bg-neutral-50"}`}
     >
       <Image
         loader={imageLoader}

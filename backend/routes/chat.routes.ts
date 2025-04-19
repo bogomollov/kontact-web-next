@@ -5,7 +5,7 @@ import { isAuth } from "../middleware/auth";
 const prisma = new PrismaClient();
 const router = express.Router();
 
-router.get("/chats", isAuth, async (req: Request, res: Response) => {
+router.get("/", isAuth, async (req: Request, res: Response) => {
   try {
     const id = req.token?.id;
 
@@ -67,7 +67,72 @@ router.get("/chats", isAuth, async (req: Request, res: Response) => {
   }
 });
 
-router.get("/chats/search", isAuth, async (req: Request, res: Response) => {
+router.post("/", isAuth, async (req: Request, res: Response) => {
+  try {
+    const id = req.token?.id;
+    const { user_id } = req.body;
+
+    if (!user_id) {
+      res.status(400).json({
+        message:
+          "Не указан идентификатор пользователя для создания личного чата",
+      });
+      return;
+    }
+    if (id === user_id) {
+      res.status(400).json({
+        message: "Нельзя создать чат с самим собой",
+      });
+      return;
+    }
+
+    const findChat = await prisma.chat.findFirst({
+      where: {
+        type: "private",
+        members: {
+          every: {
+            user_id: { in: [id, user_id] },
+          },
+        },
+      },
+      include: {
+        members: true,
+      },
+    });
+
+    if (findChat) {
+      res.status(200).json({ chat_id: findChat.id });
+      return;
+    }
+
+    const newChat = await prisma.chat.create({
+      data: {
+        type: "private",
+        members: {
+          createMany: {
+            data: [{ user_id: id }, { user_id: user_id }],
+          },
+        },
+      },
+      include: {
+        members: true,
+      },
+    });
+
+    if (newChat) {
+      res.status(201).json({ chat_id: newChat.id });
+      return;
+    } else {
+      res.status(500).json({ message: "Не удалось создать личный чат" });
+      return;
+    }
+  } catch (error) {
+    console.error("Ошибка создания личного чата:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+});
+
+router.get("/search", isAuth, async (req: Request, res: Response) => {
   try {
     const query = req.query.query as string;
     if (!query) {
@@ -161,7 +226,7 @@ router.get("/chats/search", isAuth, async (req: Request, res: Response) => {
   }
 });
 
-router.get("/chats/:id", isAuth, async (req: Request, res: Response) => {
+router.get("/:id", isAuth, async (req: Request, res: Response) => {
   try {
     const ParamID = req.params["id"];
     const id = req.token?.id;
@@ -230,78 +295,6 @@ router.get("/chats/:id", isAuth, async (req: Request, res: Response) => {
       message: "Ошибка сервера",
     });
     return;
-  }
-});
-
-router.post("/chats", async (req: Request, res: Response) => {
-  try {
-    const id = req.token?.id;
-    const { user_id } = req.body;
-
-    if (!user_id) {
-      res.status(401).json({
-        message:
-          "Не указан идентификатор пользователя с которым будет создан новый чат",
-      });
-      return;
-    }
-    const findChat = await prisma.chat.findFirst({
-      where: {
-        AND: [
-          {
-            members: {
-              some: {
-                user_id: id,
-              },
-            },
-          },
-          {
-            members: {
-              some: {
-                user_id: id,
-              },
-            },
-          },
-        ],
-        members: {
-          every: {
-            OR: [{ user_id: id }, { user_id: user_id }],
-          },
-        },
-      },
-      include: {
-        members: true,
-      },
-    });
-
-    if (findChat) {
-      res.status(200).json({ chat_id: findChat.id });
-      return;
-    }
-
-    const newChat = await prisma.chat.create({
-      data: {
-        members: {
-          createMany: {
-            data: [{ user_id: id }, { user_id: user_id }],
-          },
-        },
-      },
-      include: {
-        members: true,
-      },
-    });
-
-    if (newChat) {
-      res.status(201).json({ chat_id: newChat.id });
-      return;
-    } else {
-      res.status(500).json({ message: "Не удалось создать чат" });
-      return;
-    }
-  } catch (error) {
-    console.error("Ошибка создания нового чата:", error);
-    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 

@@ -1,8 +1,9 @@
 import { LeftSidebar } from "@/components/sidebar/LeftSidebar";
 import { apiFetch } from "@/lib/apiFetch";
-import { IChatListItem, IMe } from "@/types";
+import { IChat, IChatListItem, IMe } from "@/types";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Чат | kontact web",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
     "Современный корпоративный веб-мессенджер. Безопасные чаты, групповые обсуждения, файлообмен и интеграция с корпоративными системами",
 };
 
-export async function getMe(session: string | undefined) {
+export async function getMe(session?: string | undefined) {
   const res = await apiFetch(`/me`, {
     cache: "force-cache",
     headers: {
@@ -18,8 +19,32 @@ export async function getMe(session: string | undefined) {
     },
     credentials: "include",
   });
-  const me: IMe = (await res.json()) as IMe;
-  return me;
+  const data: IMe = await res.json();
+  return data;
+}
+
+export async function getChats(session?: string | undefined) {
+  const res = await apiFetch(`/chats`, {
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const data: IChatListItem[] = await res.json();
+  return data;
+}
+
+export async function getChatId(id: string, session: string | undefined) {
+  const res = await apiFetch(`/chats/${id}`, {
+    cache: "reload",
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const chat: IChat = await res.json();
+  if (!chat) notFound();
+  return chat;
 }
 
 export default async function DashboardLayout({
@@ -28,14 +53,7 @@ export default async function DashboardLayout({
   const session = (await cookies()).get("session")?.value;
 
   const me: IMe = await getMe(session);
-
-  const chatsData = await apiFetch("/chats", {
-    headers: {
-      Authorization: `Bearer ${session}`,
-    },
-    credentials: "include",
-  });
-  const chatList: IChatListItem[] = await chatsData.json();
+  const chatList: IChatListItem[] = await getChats(session);
 
   if (!me || !chatList) return null;
 

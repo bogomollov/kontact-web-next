@@ -10,22 +10,13 @@ import accountRoutes from "./routes/account.routes";
 import adminRoutes from "./routes/admin.routes";
 import authRoutes from "./routes/auth.routes";
 import chatRoutes from "./routes/chat.routes";
+import messageRoutes from "./routes/message.routes";
 import { PrismaClient } from "./generated/prisma/client";
 import { isAuth } from "./middleware/auth";
 
 const app = express();
 const router = express.Router();
 const prisma = new PrismaClient();
-
-router.use(function (req, res, next) {
-  console.log(
-    "%s /api%s %s",
-    req.method,
-    decodeURIComponent(req.url),
-    res.statusCode
-  );
-  next();
-});
 
 app.use(
   cors({
@@ -34,8 +25,8 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   "/static",
@@ -46,7 +37,16 @@ app.use(
   })
 );
 
-app.use("/api", router, userRoutes, accountRoutes, adminRoutes, chatRoutes);
+app.use(function (req, res, next) {
+  console.log(req.method, decodeURIComponent(req.url), res.statusCode);
+  next();
+});
+app.use("/api", router);
+app.use("/api/users", userRoutes);
+app.use("/api/accounts", accountRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/chats", chatRoutes);
+app.use("/api/messages", messageRoutes);
 app.use("/api/auth", authRoutes);
 
 router.get("/me", isAuth, async (req: Request, res: Response) => {

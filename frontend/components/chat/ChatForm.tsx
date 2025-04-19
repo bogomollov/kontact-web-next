@@ -1,7 +1,10 @@
 "use client";
+import { apiFetch } from "@/lib/apiFetch";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function ChatForm({ chat }: { chat: any }) {
+export default function ChatForm({ chat_id }: { chat_id: number }) {
+  const router = useRouter();
   const [message, setMessage] = useState("");
   const [pending, isPending] = useState<boolean>(false);
 
@@ -9,7 +12,18 @@ export default function ChatForm({ chat }: { chat: any }) {
     e.preventDefault();
     isPending(true);
 
-    if (!message.trim()) return;
+    const res = await apiFetch(`/messages`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ chat_id: chat_id, content: message.trim() }),
+    });
+
+    if (res.ok) {
+      router.refresh();
+    }
     setMessage("");
   };
 

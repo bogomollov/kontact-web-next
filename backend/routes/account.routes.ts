@@ -6,7 +6,7 @@ import { compare, genSaltSync, hashSync } from "bcrypt-ts";
 const prisma = new PrismaClient();
 const router = express.Router();
 
-router.patch("/accounts/:id", isAuth, async (req: Request, res: Response) => {
+router.patch("/:id", isAuth, async (req: Request, res: Response) => {
   const pathId = req.params.id;
 
   if (!pathId) {
@@ -92,7 +92,7 @@ router.patch("/accounts/:id", isAuth, async (req: Request, res: Response) => {
   }
 });
 
-router.delete("/accounts/:id", isAuth, async (req: Request, res: Response) => {
+router.delete("/:id", isAuth, async (req: Request, res: Response) => {
   const pathId = req.params.id;
 
   if (!pathId) {

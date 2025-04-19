@@ -12,6 +12,7 @@ import {
 } from "@/types";
 import { apiFetch } from "@/lib/apiFetch";
 import imageLoader from "@/lib/imageLoader";
+import { UserSearchResult } from "../chat/ChatSearchResult";
 
 export function LeftSidebar({
   authUser,
@@ -49,11 +50,6 @@ export function LeftSidebar({
     },
     [],
   );
-
-  const handleClearSearchResults = () => {
-    setSearchResults(null);
-    setSearching(false);
-  };
 
   return (
     <>
@@ -150,24 +146,7 @@ export function LeftSidebar({
             <>
               {searchResults && searchResults.length > 0 ? (
                 searchResults.map((user) => (
-                  <Link
-                    key={user.id}
-                    href={`/dashboard/${user.chat_id}`}
-                    className={`flex items-center gap-[20px] rounded-[10px] px-[20px] py-[10px] ${pathname == `/dashboard/${user.chat_id}` ? "bg-neutral-100" : "hover:bg-neutral-50"}`}
-                    onClick={() => handleClearSearchResults}
-                  >
-                    <Image
-                      loader={imageLoader}
-                      src={`${user.image}`}
-                      width={55}
-                      height={55}
-                      alt={`avatar ${user.id}`}
-                      className="h-[55px] w-[55px] rounded-full"
-                    />
-                    <div className="flex flex-1 items-center justify-between">
-                      <h5>{user.name}</h5>
-                    </div>
-                  </Link>
+                  <UserSearchResult key={user.id} user={user} />
                 ))
               ) : (
                 <p className="text-center text-neutral-500">
