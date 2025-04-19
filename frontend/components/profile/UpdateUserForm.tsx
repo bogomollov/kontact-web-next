@@ -41,11 +41,11 @@ export default function UpdateUserForm({
   const [errors, setErrors] = useState<FormErrors>(undefined);
   const [message, setMessage] = useState<string | undefined>(undefined);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormData({ ...formData, newImage: file });
@@ -137,7 +137,7 @@ export default function UpdateUserForm({
           type="text"
           name="firstName"
           onChange={handleChange}
-          defaultValue={formData.firstName}
+          value={formData.firstName}
           className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
         />
         <InputError message={errors?.firstName} />
@@ -148,7 +148,8 @@ export default function UpdateUserForm({
           id="lastName"
           type="text"
           name="lastName"
-          defaultValue={formData.lastName}
+          onChange={handleChange}
+          value={formData.lastName}
           className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
         />
         <InputError message={errors?.lastName} />
@@ -159,7 +160,8 @@ export default function UpdateUserForm({
           id="middleName"
           type="text"
           name="middleName"
-          defaultValue={formData.middleName}
+          onChange={handleChange}
+          value={formData.middleName}
           className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
         />
         <InputError message={errors?.middleName} />

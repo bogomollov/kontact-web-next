@@ -6,17 +6,19 @@ import UpdateUserForm from "@/components/profile/UpdateUserForm";
 import UpdateAccountForm from "@/components/profile/UpdateAccountForm";
 import UpdatePasswordForm from "@/components/profile/UpdatePasswordForm";
 import DeleteAccountForm from "@/components/profile/DeleteAccountForm";
+import { Metadata } from "next";
+import { getMe } from "../dashboard/layout";
+
+export const metadata: Metadata = {
+  title: "Профиль | kontact web",
+  description:
+    "Современный корпоративный веб-мессенджер. Безопасные чаты, групповые обсуждения, файлообмен и интеграция с корпоративными системами",
+};
 
 export default async function Profile() {
   const session = (await cookies()).get("session")?.value;
 
-  const meData = await apiFetch("/me", {
-    headers: {
-      Authorization: `Bearer ${session}`,
-    },
-    credentials: "include",
-  });
-  const me: IMe = (await meData.json()) as IMe;
+  const me: IMe = await getMe(session);
 
   const departmentData = await apiFetch("/departments", {
     cache: "force-cache",

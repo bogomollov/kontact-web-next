@@ -17,9 +17,9 @@ interface FormData {
 export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
-    username: authUser.username,
-    email: authUser.email,
-    phone: authUser.phone,
+    username: authUser.username ?? "",
+    email: authUser.email ?? "",
+    phone: authUser.phone ?? "",
   });
   const [pending, setPending] = useState<boolean>(false);
   const [errors, setErrors] = useState<FormErrors>(undefined);
@@ -75,7 +75,7 @@ export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
             name="username"
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Отображаемое имя"
-            defaultValue={formData.username}
+            value={formData.username}
             onChange={handleChange}
           />
           <InputError message={errors?.username} />
@@ -87,7 +87,7 @@ export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
             name="email"
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Электронная почта"
-            defaultValue={formData.email}
+            value={formData.email}
             onChange={handleChange}
           />
           <InputError message={errors?.email} />
@@ -99,7 +99,7 @@ export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
             name="phone"
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Номер телефона"
-            defaultValue={formData.phone}
+            value={formData.phone}
             onChange={handleChange}
           />
           <InputError message={errors?.phone} />

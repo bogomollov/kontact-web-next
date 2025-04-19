@@ -26,16 +26,4 @@ router.get(
   }
 );
 
-router.get("/users", isAuth, async (req: Request, res: Response) => {
-  try {
-    const users = await prisma.user.findMany();
-    res.json(users);
-    return;
-  } catch (error: any) {
-    console.error("Ошибка при получении пользователей:", error);
-    res.status(500).json({ error: "Не удалось получить пользователей" });
-    return;
-  }
-});
-
 export default router;

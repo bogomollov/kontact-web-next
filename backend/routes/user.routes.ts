@@ -81,4 +81,79 @@ router.patch(
   }
 );
 
+router.get("/users/search", isAuth, async (req: Request, res: Response) => {
+  try {
+    const query = req.query.query as string;
+    const currentUserId = req.token?.id;
+
+    if (!query || !currentUserId) {
+      res.json([]);
+      return;
+    }
+
+    const users = await prisma.user.findMany({
+      where: {
+        id: { not: currentUserId },
+        OR: [
+          { firstName: { startsWith: query, mode: "insensitive" } },
+          { lastName: { startsWith: query, mode: "insensitive" } },
+          { middleName: { startsWith: query, mode: "insensitive" } },
+        ],
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        middleName: true,
+      },
+      take: 10,
+    });
+
+    const data = await Promise.all(
+      users.map(async (user) => {
+        const findChat = await prisma.chat.findFirst({
+          where: {
+            AND: [
+              {
+                members: {
+                  some: {
+                    user_id: currentUserId,
+                  },
+                },
+              },
+              {
+                members: {
+                  some: {
+                    user_id: user.id,
+                  },
+                },
+              },
+            ],
+            type: "private",
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        return {
+          id: user.id,
+          name: `${user.firstName} ${user.lastName}`,
+          image: `/static/users/${user.id}.png` || "/static/null.png",
+          chat_id: findChat?.id || null,
+        };
+      })
+    );
+
+    res.json(data);
+    return;
+  } catch (e) {
+    console.error("Ошибка поиска пользователей:", e);
+    res.status(500).json({
+      message: "Ошибка сервера",
+    });
+    return;
+  }
+});
+
 export default router;

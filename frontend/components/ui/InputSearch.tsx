@@ -2,10 +2,19 @@
 import { apiFetch } from "@/lib/apiFetch";
 import { InputHTMLAttributes, useEffect, useState } from "react";
 import Input from "./Input";
-import { IChatListItem } from "@/types";
+import { IChatSearchListItem } from "@/types";
 
 interface InputSearchProps extends InputHTMLAttributes<HTMLInputElement> {
-  callbackData: (data: IChatListItem[] | null) => void;
+  callbackData: (data: IChatSearchListItem[] | null) => void;
+}
+
+async function searchUser(query: string) {
+  const res = await apiFetch(`/users/search?query=${query}`, {
+    cache: "force-cache",
+    credentials: "include",
+  });
+  const data = (await res.json()) as IChatSearchListItem[];
+  return data;
 }
 
 export default function InputSearch({
@@ -26,10 +35,7 @@ export default function InputSearch({
 
     const searchData = async () => {
       try {
-        const response = await apiFetch(`/chats/search?query=${query}`, {
-          credentials: "include",
-        });
-        const data = (await response.json()) as IChatListItem[];
+        const data = await searchUser(query);
         callbackData(data);
       } catch (e) {
         console.log("Ошибка поиска", e);

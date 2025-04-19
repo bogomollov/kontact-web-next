@@ -4,7 +4,12 @@ import InputSearch from "../ui/InputSearch";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { IChatListItem, IMe, TChatListItem } from "@/types";
+import {
+  IChatListItem,
+  IChatSearchListItem,
+  IMe,
+  TChatListItem,
+} from "@/types";
 import { apiFetch } from "@/lib/apiFetch";
 import imageLoader from "@/lib/imageLoader";
 
@@ -18,11 +23,10 @@ export function LeftSidebar({
   const pathname = usePathname();
   const router = useRouter();
 
-  const [image, setImage] = useState<string | undefined>(authUser.image);
   const [chats, setChats] = useState<IChatListItem[]>(allchats);
-  const [searchResults, setSearchResults] = useState<IChatListItem[] | null>(
-    null,
-  );
+  const [searchResults, setSearchResults] = useState<
+    IChatSearchListItem[] | null
+  >(null);
   const [isSearching, setSearching] = useState(false);
 
   const handleLogout = async () => {
@@ -38,10 +42,18 @@ export function LeftSidebar({
     }
   };
 
-  const handleSearchResults = useCallback((data: IChatListItem[] | null) => {
-    setSearchResults(data);
-    setSearching(!!data);
-  }, []);
+  const handleSearchResults = useCallback(
+    (data: IChatSearchListItem[] | null) => {
+      setSearchResults(data);
+      setSearching(!!data);
+    },
+    [],
+  );
+
+  const handleClearSearchResults = () => {
+    setSearchResults(null);
+    setSearching(false);
+  };
 
   return (
     <>
@@ -52,14 +64,16 @@ export function LeftSidebar({
               <div className="relative">
                 <Image
                   loader={imageLoader}
-                  src={`${image}`}
+                  src={`${authUser.image}`}
                   width={55}
                   height={55}
                   alt={`avatar ${authUser.id}`}
                   className="h-[55px] w-[55px] cursor-pointer rounded-full border"
-                  onError={() => setImage("/static/null.png")}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/static/null.png";
+                  }}
                 />
-                <div className="absolute right-1 bottom-1 h-[12px] w-[12px] rounded-full border border-white bg-blue-500"></div>
+                <div className="absolute right-0 bottom-0 h-[14px] w-[14px] rounded-full border-2 border-white bg-blue-500"></div>
               </div>
               <div className="flex flex-col">
                 <h5>
@@ -126,7 +140,7 @@ export function LeftSidebar({
             <InputSearch
               callbackData={handleSearchResults}
               className="inline-flex w-full rounded-[10px] border py-[12px] pr-[20px] pl-[55px] focus:outline-blue-500"
-              placeholder="Поиск пользователей"
+              placeholder="Поиск сотрудников"
             />
           </div>
           <div className="flex flex-col px-[20px] pb-[5px]"></div>
@@ -135,25 +149,23 @@ export function LeftSidebar({
           {isSearching ? (
             <>
               {searchResults && searchResults.length > 0 ? (
-                searchResults.map((chat) => (
+                searchResults.map((user) => (
                   <Link
-                    key={chat.id}
-                    href={`/dashboard/${chat.id}`}
-                    className={`flex items-center gap-[20px] rounded-[10px] px-[20px] py-[10px]`}
+                    key={user.id}
+                    href={`/dashboard/${user.chat_id}`}
+                    className={`flex items-center gap-[20px] rounded-[10px] px-[20px] py-[10px] ${pathname == `/dashboard/${user.chat_id}` ? "bg-neutral-100" : "hover:bg-neutral-50"}`}
+                    onClick={() => handleClearSearchResults}
                   >
                     <Image
                       loader={imageLoader}
-                      src={`${chat.image}`}
+                      src={`${user.image}`}
                       width={55}
                       height={55}
-                      alt={`avatar ${chat.id}`}
+                      alt={`avatar ${user.id}`}
                       className="h-[55px] w-[55px] rounded-full"
                     />
                     <div className="flex flex-1 items-center justify-between">
-                      <h5>{chat.name}</h5>
-                      <small className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-blue-500 text-white">
-                        {chat.unreadCount}
-                      </small>
+                      <h5>{user.name}</h5>
                     </div>
                   </Link>
                 ))

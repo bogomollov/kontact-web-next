@@ -67,88 +67,6 @@ router.get("/chats", isAuth, async (req: Request, res: Response) => {
   }
 });
 
-router.get("/chats/:id", isAuth, async (req: Request, res: Response) => {
-  try {
-    const ParamID = req.params["id"];
-    const id = req.token?.id;
-
-    if (!ParamID) {
-      res.status(401).json({ message: "Не указан идентификатор чата" });
-      return;
-    }
-
-    const findChat = await prisma.chat.findUnique({
-      where: {
-        id: Number(ParamID),
-      },
-      include: {
-        members: {
-          include: {
-            user: true,
-          },
-        },
-        messages: true,
-      },
-    });
-
-    if (findChat) {
-      const another_user = findChat.members.find(
-        (member) => member.user_id !== id
-      )?.user;
-
-      const data: any = {
-        id: findChat.id,
-        type: findChat.type,
-        name:
-          findChat.type == "group"
-            ? findChat.name
-            : `${another_user?.firstName} ${another_user?.lastName}`,
-        image:
-          findChat.type == "group"
-            ? `/static/chats/${findChat.id}/${findChat.id}.png`
-            : `/static/users/${another_user?.id}.png` || "/static/null.png",
-        messages: findChat.messages,
-      };
-      res.json(data);
-      return;
-    }
-    // else {
-    //   const newChat = await prisma.chat.create({
-    //     data: {
-    //       name:
-    //     }
-    //   })
-    // }
-
-    // if (chat.type === "private") {
-    //   const otherMember = chat.members.find(
-    //     (member) => member.userId !== id
-    //   )?.user;
-    //   data.otherUser = otherMember;
-    //   data.isPrivate = true;
-    // } else if (chat.type == "group") {
-    //   const chatWithGroupInfo = await prisma.chat.findUnique({
-    //     where: { id: Number(ParamID) },
-    //     include: { members: { include: { user: true } } },
-    //   });
-    //   responseData.groupName = chatWithGroupInfo?.groupName;
-    //   responseData.groupAvatar = chatWithGroupInfo?.groupAvatar;
-    //   responseData.participants = chatWithGroupInfo?.members.map(
-    //     (member) => member.user
-    //   );
-    //   responseData.isGroup = true;
-    // }
-
-    // res.json(data);
-    return;
-  } catch (e) {
-    res.status(500).json({
-      message: "Ошибка сервера",
-    });
-    return;
-  }
-});
-
 router.get("/chats/search", isAuth, async (req: Request, res: Response) => {
   try {
     const query = req.query.query as string;
@@ -240,6 +158,150 @@ router.get("/chats/search", isAuth, async (req: Request, res: Response) => {
       message: "Ошибка сервера",
     });
     return;
+  }
+});
+
+router.get("/chats/:id", isAuth, async (req: Request, res: Response) => {
+  try {
+    const ParamID = req.params["id"];
+    const id = req.token?.id;
+
+    if (!ParamID) {
+      res.status(401).json({ message: "Не указан идентификатор чата" });
+      return;
+    }
+
+    const findChat = await prisma.chat.findUnique({
+      where: {
+        id: Number(ParamID),
+      },
+      include: {
+        members: {
+          include: {
+            user: true,
+          },
+        },
+        messages: {
+          include: {
+            sender: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                middleName: true,
+                department_id: true,
+                position_id: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!findChat) {
+      res.json({ message: "Чат не найден" });
+    }
+
+    if (findChat) {
+      const another_user = findChat.members.find(
+        (member) => member.user_id !== id
+      )?.user;
+
+      const data: any = {
+        id: findChat.id,
+        type: findChat.type,
+        name:
+          findChat.type == "group"
+            ? findChat.name
+            : `${another_user?.firstName} ${another_user?.lastName} ${another_user?.middleName}`,
+        image:
+          findChat.type == "group"
+            ? `/static/chats/${findChat.id}/${findChat.id}.png`
+            : `/static/users/${another_user?.id}.png` || "/static/null.png",
+        membersCount: findChat.type == "group" ? findChat.members.length : null,
+        messages: findChat.messages,
+      };
+
+      res.json(data);
+      return;
+    }
+  } catch (e) {
+    res.status(500).json({
+      message: "Ошибка сервера",
+    });
+    return;
+  }
+});
+
+router.post("/chats", async (req: Request, res: Response) => {
+  try {
+    const id = req.token?.id;
+    const { user_id } = req.body;
+
+    if (!user_id) {
+      res.status(401).json({
+        message:
+          "Не указан идентификатор пользователя с которым будет создан новый чат",
+      });
+      return;
+    }
+    const findChat = await prisma.chat.findFirst({
+      where: {
+        AND: [
+          {
+            members: {
+              some: {
+                user_id: id,
+              },
+            },
+          },
+          {
+            members: {
+              some: {
+                user_id: id,
+              },
+            },
+          },
+        ],
+        members: {
+          every: {
+            OR: [{ user_id: id }, { user_id: user_id }],
+          },
+        },
+      },
+      include: {
+        members: true,
+      },
+    });
+
+    if (findChat) {
+      res.status(200).json({ chat_id: findChat.id });
+      return;
+    }
+
+    const newChat = await prisma.chat.create({
+      data: {
+        members: {
+          createMany: {
+            data: [{ user_id: id }, { user_id: user_id }],
+          },
+        },
+      },
+      include: {
+        members: true,
+      },
+    });
+
+    if (newChat) {
+      res.status(201).json({ chat_id: newChat.id });
+      return;
+    } else {
+      res.status(500).json({ message: "Не удалось создать чат" });
+      return;
+    }
+  } catch (error) {
+    console.error("Ошибка создания нового чата:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 

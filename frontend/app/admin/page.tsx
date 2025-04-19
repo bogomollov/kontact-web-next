@@ -1,11 +1,29 @@
 import { apiFetch } from "@/lib/apiFetch";
-import { IAccount, IDepartment, IPosition, IUser } from "@/types";
+import { IAccount, IDepartment, IMe, IPosition, IUser } from "@/types";
+import { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Админ-панель | kontact web",
+  description:
+    "Современный корпоративный веб-мессенджер. Безопасные чаты, групповые обсуждения, файлообмен и интеграция с корпоративными системами",
+};
 
 export default async function Admin() {
   const session = (await cookies()).get("session")?.value;
+
+  const meData = await apiFetch("/me", {
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const me: IMe = (await meData.json()) as IMe;
+
+  if (me.role_id != 2) redirect("/dashboard");
 
   const accountsData = await apiFetch("/accounts", {
     headers: {
