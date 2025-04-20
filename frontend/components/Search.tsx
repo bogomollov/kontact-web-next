@@ -14,7 +14,6 @@ export function Search() {
   return (
     <div className="px-[20px]">
       <InputSearch
-        searchUrl="search"
         callbackData={handleData}
         className="inline-flex w-full rounded-[10px] border py-[12px] pr-[20px] pl-[55px] focus:outline-blue-500"
         placeholder="Поиск пользователей"
