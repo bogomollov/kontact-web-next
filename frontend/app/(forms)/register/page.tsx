@@ -45,7 +45,7 @@ export default function RegisterForm() {
       const data: FormState = await response.json();
 
       if (response.ok) {
-        router.refresh();
+        router.push("/dashboard");
       } else {
         if (data?.errors) {
           setErrors(data.errors);

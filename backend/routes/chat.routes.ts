@@ -259,6 +259,9 @@ router.get("/:id", isAuth, async (req: Request, res: Response) => {
               },
             },
           },
+          orderBy: {
+            createdAt: "asc",
+          },
         },
       },
     });
@@ -295,6 +298,23 @@ router.get("/:id", isAuth, async (req: Request, res: Response) => {
       message: "Ошибка сервера",
     });
     return;
+  }
+});
+
+router.patch("/:chatId/messages/read", async (req: Request, res: Response) => {
+  try {
+    const chat_id = req.params["chatId"];
+    const id = req.token?.id;
+
+    const messages = await prisma.message.updateMany({
+      where: { chat_id: Number(chat_id), sender_id: id, isRead: false },
+      data: {
+        isRead: true,
+      },
+    });
+    res.json({ count: messages.count });
+  } catch (error) {
+    console.log(error);
   }
 });
 

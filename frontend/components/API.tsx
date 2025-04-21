@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react";
 import Table from "./ui/Table";
 import { apiFetch } from "@/lib/apiFetch";
-import { ApiResponse } from "@/types/index";
+import { ApiResponse } from "@/types";
 
 export default function API() {
   const [response, setResponse] = useState<ApiResponse>({});

@@ -1,59 +1,39 @@
-import { LeftSidebar } from "@/components/sidebar/LeftSidebar";
+"use client";
+import useSWR from "swr";
 import { apiFetch } from "@/lib/apiFetch";
-import { IChat, IChatListItem, IMe } from "@/types";
-import { Metadata } from "next";
-import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { IChatListItem, IMe } from "@/types";
+import { LeftSidebar } from "@/components/sidebar/LeftSidebar";
 
-export const metadata: Metadata = {
-  title: "Чат | kontact web",
-  description:
-    "Современный корпоративный веб-мессенджер. Безопасные чаты, групповые обсуждения, файлообмен и интеграция с корпоративными системами",
-};
-
-export async function getMe(session?: string | undefined) {
-  const res = await apiFetch(`/me`, {
-    cache: "force-cache",
-    headers: {
-      Authorization: `Bearer ${session}`,
-    },
+export async function getMe(url: string) {
+  const res = await apiFetch(url, {
     credentials: "include",
   });
-  const data: IMe = await res.json();
-  return data;
+  return res.json();
 }
 
-export async function getChats(session?: string | undefined) {
-  const res = await apiFetch(`/chats`, {
-    headers: {
-      Authorization: `Bearer ${session}`,
-    },
+async function getChats(url: string) {
+  const res = await apiFetch(url, {
     credentials: "include",
   });
-  const data: IChatListItem[] = await res.json();
-  return data;
+  return res.json();
 }
 
-export async function getChatId(id: string, session: string | undefined) {
-  const res = await apiFetch(`/chats/${id}`, {
-    cache: "reload",
-    headers: {
-      Authorization: `Bearer ${session}`,
-    },
-    credentials: "include",
-  });
-  const chat: IChat = await res.json();
-  if (!chat) notFound();
-  return chat;
-}
-
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const session = (await cookies()).get("session")?.value;
+  const { data: me } = useSWR<IMe>(`/me`, (url) => getMe(url), {
+    revalidateOnFocus: true,
+    refreshInterval: 3000,
+  });
 
-  const me: IMe = await getMe(session);
-  const chatList: IChatListItem[] = await getChats(session);
+  const { data: chatList } = useSWR<IChatListItem[]>(
+    `/chats`,
+    (url) => getChats(url),
+    {
+      revalidateOnFocus: true,
+      refreshInterval: 3000,
+    },
+  );
 
   if (!me || !chatList) return null;
 

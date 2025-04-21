@@ -1,7 +1,6 @@
 "use client";
-import imageLoader from "@/lib/imageLoader";
 import { IChat, IMe, IMessage } from "@/types";
-import Image from "next/image";
+import ChatAvatar from "../ui/ChatAvatar";
 
 interface ChatContentProps {
   data: IChat;
@@ -16,16 +15,9 @@ export default function ChatContent({ data, authUser }: ChatContentProps) {
           <div key={message.id} className="flex items-end gap-[8px]">
             {data?.type === "group" && message.sender_id !== authUser.id && (
               <div className="relative flex flex-col">
-                <Image
-                  loader={imageLoader}
-                  src={`/static/users/${message.sender_id}.png`}
-                  alt={`avatar ${message.sender?.firstName} ${message.sender?.lastName}`}
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/static/null.png";
-                  }}
+                <ChatAvatar
+                  chat_id={message.sender.id}
+                  chat_image={`/static/users/${message.sender_id}.png`}
                 />
               </div>
             )}

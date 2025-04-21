@@ -4,11 +4,31 @@
   "rules": {
     "react-hooks/rules-of-hooks": "warn",
     "react-hooks/exhaustive-deps": "warn",
-    "import/no-extraneous-dependencies": "error",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true,
+        "optionalDependencies": false,
+        "peerDependencies": false,
+        "patterns": ["@/types/*"]
+      }
+    ],
     "@next/next/no-assign-module-variable": "error",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": "off",
     "prettier/prettier": "warn"
   },
-  "ignorePatterns": ["**/.next/**", "**/node_modules/**", "*.log", "**/dist/**"]
+  "ignorePatterns": [
+    "**/.next/**",
+    "**/node_modules/**",
+    "*.log",
+    "**/dist/**"
+  ],
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "project": "./tsconfig.json" // Укажите путь к вашему tsconfig.json
+      }
+    }
+  }
 }

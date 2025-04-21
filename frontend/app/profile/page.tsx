@@ -7,7 +7,6 @@ import UpdateAccountForm from "@/components/profile/UpdateAccountForm";
 import UpdatePasswordForm from "@/components/profile/UpdatePasswordForm";
 import DeleteAccountForm from "@/components/profile/DeleteAccountForm";
 import { Metadata } from "next";
-import { getMe } from "../dashboard/layout";
 
 export const metadata: Metadata = {
   title: "Профиль | kontact web",
@@ -18,7 +17,14 @@ export const metadata: Metadata = {
 export default async function Profile() {
   const session = (await cookies()).get("session")?.value;
 
-  const me: IMe = await getMe(session);
+  const meData = await apiFetch("/me", {
+    cache: "no-store",
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const me: IMe = await meData.json();
 
   const departmentData = await apiFetch("/departments", {
     cache: "force-cache",
@@ -27,8 +33,7 @@ export default async function Profile() {
     },
     credentials: "include",
   });
-  const departments: IDepartment[] =
-    (await departmentData.json()) as IDepartment[];
+  const departments: IDepartment[] = await departmentData.json();
 
   const positionData = await apiFetch("/positions", {
     cache: "force-cache",
@@ -37,7 +42,7 @@ export default async function Profile() {
     },
     credentials: "include",
   });
-  const positions: IPosition[] = (await positionData.json()) as IPosition[];
+  const positions: IPosition[] = await positionData.json();
 
   if (!me) return null;
 
