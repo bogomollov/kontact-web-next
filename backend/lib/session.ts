@@ -42,7 +42,7 @@ export async function createSession(
   const session = await encrypt({ id: payload.id });
   res.cookie("session", session, {
     httpOnly: true,
-    secure: node_env == "prod",
+    secure: node_env == "production",
     expires: AccessExpiresAt,
     sameSite: "lax",
     path: "/",

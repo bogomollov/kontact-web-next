@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import imageLoader from "@/lib/imageLoader";
 import { IChatSearchListItem } from "@/types";
 import { apiFetch } from "@/lib/apiFetch";
+import ChatAvatar from "../ui/ChatAvatar";
 
 interface UserSearchResultProps {
   user: IChatSearchListItem;
@@ -46,17 +47,7 @@ export function UserSearchResult({ user }: UserSearchResultProps) {
       onClick={handleUserClick}
       className={`flex cursor-pointer items-center gap-[20px] rounded-[10px] px-[20px] py-[10px] ${pathname == `/dashboard/${user.chat_id}` ? "bg-neutral-100" : "hover:bg-neutral-50"}`}
     >
-      <Image
-        loader={imageLoader}
-        src={`${user.image}`}
-        width={55}
-        height={55}
-        alt={`avatar ${user.id}`}
-        className="h-[55px] w-[55px] rounded-full"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = "/static/null.png";
-        }}
-      />
+      <ChatAvatar chat_id={user.id} chat_image={user.image} />
       <div className="flex flex-1 items-center justify-between">
         <h5>{user.name}</h5>
       </div>

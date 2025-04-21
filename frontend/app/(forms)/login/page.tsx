@@ -2,7 +2,6 @@
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import InputError from "@/components/ui/InputError";
-import { oauthProviders } from "@/lib/providers";
 import Input from "@/components/ui/Input";
 import InputLabel from "@/components/ui/InputLabel";
 import { useState } from "react";
@@ -44,7 +43,7 @@ export default function LoginForm() {
       const data: FormState = await response.json();
 
       if (response.ok) {
-        router.refresh();
+        router.push("/dashboard");
       } else {
         if (data?.errors) {
           setErrors(data.errors);
@@ -88,13 +87,8 @@ export default function LoginForm() {
             </div>
             <div className="flex w-full">
               <div className="flex w-full flex-col items-start gap-[8px]">
-                <div className="flex w-full justify-between">
-                  <label htmlFor="password">Пароль</label>
-                  <Link href="/reset-password" className="text-blue-500">
-                    Забыли пароль?
-                  </Link>
-                </div>
-                <input
+                <InputLabel htmlFor="password">Пароль</InputLabel>
+                <Input
                   id="password"
                   name="password"
                   type="password"
@@ -117,24 +111,7 @@ export default function LoginForm() {
           </Button>
         </form>
         <div className="flex w-full flex-col gap-[20px]">
-          <div className="flex w-full items-center justify-between gap-4">
-            <hr className="h-px w-full border-0 bg-neutral-300"></hr>
-            <small className="text-neutral-500">ИЛИ</small>
-            <hr className="h-px w-full border-0 bg-neutral-300"></hr>
-          </div>
           <div className="flex w-full flex-col items-center gap-[25px]">
-            <div className="flex w-full gap-3">
-              {oauthProviders.map(({ id, name, icon }) => (
-                <Button
-                  key={id}
-                  provider={id}
-                  icon={icon}
-                  className="w-full gap-2 rounded-md border"
-                >
-                  Войти через {name}
-                </Button>
-              ))}
-            </div>
             <div className="flex items-center gap-2">
               <p>Еще нету аккаунта?</p>
               <Link href="/register" className="text-blue-500">

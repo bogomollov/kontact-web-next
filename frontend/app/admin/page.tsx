@@ -5,7 +5,6 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
-import { getMe } from "../dashboard/layout";
 
 export const metadata: Metadata = {
   title: "Админ-панель | kontact web",
@@ -16,7 +15,14 @@ export const metadata: Metadata = {
 export default async function Admin() {
   const session = (await cookies()).get("session")?.value;
 
-  const me: IMe = await getMe(session);
+  const meData = await apiFetch("/me", {
+    cache: "force-cache",
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+    credentials: "include",
+  });
+  const me: IMe = await meData.json();
 
   if (me.role_id != 2) redirect("/dashboard");
 

@@ -18,12 +18,8 @@ export default function ChatForm({ chat_id }: { chat_id: number }) {
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({ chat_id: chat_id, content: message.trim() }),
+      body: JSON.stringify({ chat_id: chat_id, content: message }),
     });
-
-    if (res.ok) {
-      router.refresh();
-    }
     setMessage("");
   };
 
