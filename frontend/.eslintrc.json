@@ -27,7 +27,7 @@
   "settings": {
     "import/resolver": {
       "typescript": {
-        "project": "./tsconfig.json" // Укажите путь к вашему tsconfig.json
+        "project": "./tsconfig.json"
       }
     }
   }

@@ -14,38 +14,24 @@ router.post("/register", async (req: Request, res: Response) => {
     const { firstName, lastName, middleName, email, username, password } =
       validatedData;
 
-    const emailFind = await prisma.account.findUnique({
-      where: {
-        email: email,
-      },
-      select: {
-        email: true,
-      },
-    });
+    const [emailExists, usernameExists] = await prisma.$transaction([
+      prisma.account.findUnique({ where: { email }, select: { email: true } }),
+      prisma.account.findUnique({
+        where: { username },
+        select: { username: true },
+      }),
+    ]);
 
-    if (emailFind) {
+    if (emailExists) {
       res.status(409).json({
-        errors: {
-          email: "Аккаунт с такой почтой уже существует",
-        },
+        errors: { email: "Аккаунт с такой почтой уже существует" },
       });
       return;
     }
 
-    const userFind = await prisma.account.findUnique({
-      where: {
-        username: username,
-      },
-      select: {
-        username: true,
-      },
-    });
-
-    if (userFind) {
+    if (usernameExists) {
       res.status(409).json({
-        errors: {
-          username: "Пользователь с таким псевдонимом уже существует",
-        },
+        errors: { username: "Пользователь с таким псевдонимом уже существует" },
       });
       return;
     }
@@ -53,47 +39,68 @@ router.post("/register", async (req: Request, res: Response) => {
     const salt = genSaltSync(12);
     const passwordHash = hashSync(password, salt);
 
-    const newUser = await prisma.user.create({
-      data: {
-        firstName: firstName,
-        lastName: lastName,
-        middleName: middleName,
-        department_id: 1,
-        position_id: 1,
-      },
+    const [newUser, account] = await prisma.$transaction(async (tx) => {
+      const createdUser = await tx.user.create({
+        data: {
+          firstName,
+          lastName,
+          middleName,
+          department_id: 1,
+          position_id: 1,
+        },
+      });
+
+      const createdAccount = await tx.account.create({
+        data: {
+          user_id: createdUser.id,
+          username,
+          password: passwordHash,
+          email,
+          role_id: 1,
+        },
+      });
+
+      return [createdUser, createdAccount];
     });
 
-    const account = await prisma.account.create({
+    await prisma.account.update({
+      where: { id: account.id },
+      data: { user_id: newUser.id },
+    });
+
+    await prisma.chatMember.create({
       data: {
+        chat_id: 2,
         user_id: newUser.id,
-        username: username,
-        password: passwordHash,
-        email: email,
-        role_id: 1,
       },
     });
 
     await createSession(req, res, {
       id: newUser.id,
+      username: account.username,
+      email: account.email,
     });
+
     res.status(201).json({ message: "Успешная регистрация" });
+    return;
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-      const fieldsErrors: { [key: string]: string[] } = {};
-      error.errors.forEach((err) => {
-        if (err.path && err.message) {
-          const fieldName = err.path[0] as string;
-          if (!fieldsErrors[fieldName]) {
-            fieldsErrors[fieldName] = [];
+      const fieldsErrors = error.errors.reduce<Record<string, string[]>>(
+        (acc, err) => {
+          if (err.path?.length) {
+            const fieldName = err.path[0];
+            acc[fieldName] = [...(acc[fieldName] || []), err.message];
           }
-          fieldsErrors[fieldName].push(err.message);
-        }
-      });
+          return acc;
+        },
+        {}
+      );
       res.status(400).json({ errors: fieldsErrors });
-    } else {
-      console.error("Ошибка при регистрации:", error);
-      res.status(500).json({ message: "Ошибка при регистрации" });
+      return;
     }
+
+    res.status(500).json({ message: "Ошибка при регистрации" });
+    return;
   }
 });
 
@@ -103,20 +110,11 @@ router.post("/login", async (req: Request, res: Response) => {
     const { email, password } = validatedData;
 
     const account = await prisma.account.findUnique({
-      where: {
-        email: email,
-        deletedAt: null,
-      },
-      select: {
-        email: true,
-        password: true,
-        user_id: true,
-        username: true,
-        role: true,
-      },
+      where: { email, deletedAt: null },
+      include: { role: true, user: true },
     });
 
-    if (!account || !account.password) {
+    if (!account?.password) {
       res.status(409).json({ message: "Неправильный логин или пароль" });
       return;
     }
@@ -127,38 +125,47 @@ router.post("/login", async (req: Request, res: Response) => {
       return;
     }
 
-    const userData = {
+    await createSession(req, res, {
       id: account.user_id,
       username: account.username,
       role: account.role.name,
-    };
+      email: account.email,
+    });
 
-    await createSession(req, res, userData);
-    res.status(201).json({ message: "Успешная авторизация" });
+    res.status(201).json({
+      message: "Успешная авторизация",
+      user: {
+        id: account.user_id,
+        username: account.username,
+        role: account.role.name,
+      },
+    });
+    return;
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-      const fieldsErrors: { [key: string]: string[] } = {};
-      error.errors.forEach((err) => {
-        if (err.path && err.message) {
-          const fieldName = err.path[0] as string;
-          if (!fieldsErrors[fieldName]) {
-            fieldsErrors[fieldName] = [];
+      const fieldsErrors = error.errors.reduce<Record<string, string[]>>(
+        (acc, err) => {
+          if (err.path?.length) {
+            const fieldName = err.path[0];
+            acc[fieldName] = [...(acc[fieldName] || []), err.message];
           }
-          fieldsErrors[fieldName].push(err.message);
-        }
-      });
+          return acc;
+        },
+        {}
+      );
       res.status(400).json({ errors: fieldsErrors });
-    } else {
-      console.error("Ошибка при авторизации:", error);
-      res.status(500).json({ message: "Ошибка при авторизации" });
+      return;
     }
+
+    res.status(500).json({ message: "Ошибка при авторизации" });
+    return;
   }
 });
 
-router.post("/logout", async (req: Request, res: Response) => {
+router.post("/logout", (req: Request, res: Response) => {
   res.clearCookie("session");
   req.token = undefined;
-  res.json({ message: "Токен удален" });
+  res.json({ message: "Сессия завершена" });
   return;
 });
 

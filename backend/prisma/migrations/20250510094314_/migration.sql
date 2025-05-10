@@ -36,7 +36,7 @@ CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "middleName" TEXT NOT NULL,
+    "middleName" TEXT,
     "department_id" INTEGER,
     "position_id" INTEGER,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE "users" (
 CREATE TABLE "accounts" (
     "id" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
-    "password" TEXT,
+    "password" TEXT NOT NULL,
     "email" TEXT,
     "phone" TEXT,
     "role_id" INTEGER NOT NULL,
@@ -63,6 +63,7 @@ CREATE TABLE "accounts" (
 -- CreateTable
 CREATE TABLE "chats" (
     "id" SERIAL NOT NULL,
+    "name" TEXT,
     "type" "ChatType" NOT NULL DEFAULT 'private',
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -70,10 +71,9 @@ CREATE TABLE "chats" (
 );
 
 -- CreateTable
-CREATE TABLE "chatsmember" (
+CREATE TABLE "chat_members" (
     "chat_id" INTEGER NOT NULL,
     "user_id" INTEGER NOT NULL,
-    "role" "ChatMemberRole" NOT NULL DEFAULT 'member',
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -83,6 +83,7 @@ CREATE TABLE "messages" (
     "chat_id" INTEGER NOT NULL,
     "sender_id" INTEGER,
     "content" TEXT NOT NULL,
+    "isRead" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "messages_pkey" PRIMARY KEY ("id")
@@ -110,7 +111,7 @@ CREATE UNIQUE INDEX "accounts_phone_key" ON "accounts"("phone");
 CREATE UNIQUE INDEX "accounts_user_id_key" ON "accounts"("user_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "chatsmember_chat_id_user_id_key" ON "chatsmember"("chat_id", "user_id");
+CREATE UNIQUE INDEX "chat_members_chat_id_user_id_key" ON "chat_members"("chat_id", "user_id");
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_department_id_fkey" FOREIGN KEY ("department_id") REFERENCES "departments"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -125,10 +126,10 @@ ALTER TABLE "accounts" ADD CONSTRAINT "accounts_role_id_fkey" FOREIGN KEY ("role
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "chatsmember" ADD CONSTRAINT "chatsmember_chat_id_fkey" FOREIGN KEY ("chat_id") REFERENCES "chats"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "chat_members" ADD CONSTRAINT "chat_members_chat_id_fkey" FOREIGN KEY ("chat_id") REFERENCES "chats"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "chatsmember" ADD CONSTRAINT "chatsmember_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "chat_members" ADD CONSTRAINT "chat_members_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "messages" ADD CONSTRAINT "messages_chat_id_fkey" FOREIGN KEY ("chat_id") REFERENCES "chats"("id") ON DELETE CASCADE ON UPDATE CASCADE;

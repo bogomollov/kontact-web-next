@@ -112,7 +112,6 @@ export default function RegisterForm() {
                 onChange={handleChange}
                 className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
                 placeholder="Введите отчество"
-                required
               />
               <InputError message={errors?.middleName} />
             </div>

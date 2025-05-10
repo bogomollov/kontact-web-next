@@ -13,7 +13,7 @@ import Image from "next/image";
 interface FormData {
   firstName: string;
   lastName: string;
-  middleName: string;
+  middleName?: string | undefined;
   image: string | undefined;
   newImage: File | null;
 }
@@ -33,7 +33,7 @@ export default function UpdateUserForm({
   const [formData, setFormData] = useState<FormData>({
     firstName: authUser.user.firstName,
     lastName: authUser.user.lastName,
-    middleName: authUser.user.middleName,
+    middleName: authUser.user.middleName || undefined,
     image: authUser.image,
     newImage: null,
   });
@@ -65,7 +65,9 @@ export default function UpdateUserForm({
     const data = new FormData();
     data.append("firstName", formData.firstName);
     data.append("lastName", formData.lastName);
-    data.append("middleName", formData.middleName);
+    if (formData.middleName) {
+      data.append("middleName", formData.middleName);
+    }
 
     if (formData.newImage) {
       data.append("image", formData.newImage);

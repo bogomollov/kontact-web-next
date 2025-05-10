@@ -13,6 +13,7 @@ export interface IChatListItem {
   name: string;
   image?: string;
   unreadCount: number;
+  is_online?: boolean;
 }
 
 export type TChatListItem = {
@@ -21,6 +22,7 @@ export type TChatListItem = {
   name: string;
   image?: string;
   unreadCount: number;
+  is_online?: boolean;
 };
 
 export interface IChat {
@@ -29,6 +31,7 @@ export interface IChat {
   name: string;
   image?: string;
   membersCount?: number;
+  is_online?: boolean;
   messages: IMessage[];
 }
 

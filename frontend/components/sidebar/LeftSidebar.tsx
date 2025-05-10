@@ -146,12 +146,19 @@ export function LeftSidebar({
                     key={chat.id}
                     className={`flex items-center gap-[20px] rounded-[10px] px-[20px] py-[10px] ${pathname == `/dashboard/${chat.id}` ? "bg-neutral-100" : "hover:bg-neutral-50"}`}
                   >
-                    <ChatAvatar chat_id={chat.id} chat_image={chat.image} />
+                    <div className="relative">
+                      <ChatAvatar chat_id={chat.id} chat_image={chat.image} />
+                      {chat.is_online && (
+                        <div className="absolute right-0 bottom-0 h-[14px] w-[14px] rounded-full border-2 border-white bg-blue-500"></div>
+                      )}
+                    </div>
                     <div className="flex flex-1 items-center justify-between">
                       <h5>{chat.name}</h5>
-                      <small className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-blue-500 text-white">
-                        {chat.unreadCount}
-                      </small>
+                      {chat.unreadCount > 0 && (
+                        <small className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-blue-500 text-white">
+                          {chat.unreadCount}
+                        </small>
+                      )}
                     </div>
                   </Link>
                 ))

@@ -114,7 +114,7 @@ async function main() {
     update: {},
     create: {
       type: "group",
-      name: "Тестовая группа",
+      name: "Общая группа",
     },
   });
 
@@ -141,7 +141,7 @@ async function main() {
     create: {
       chat_id: chatGroup.id,
       sender_id: admin.id,
-      content: "Привет. Это тестовое сообщение. Попробуй мне ответить",
+      content: "Это тестовое сообщение в общей группе",
     },
   });
 
@@ -159,15 +159,6 @@ async function main() {
     create: {
       chat_id: chatGroup.id,
       user_id: admin.id,
-    },
-  });
-  await prisma.message.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      chat_id: chatGroup.id,
-      sender_id: admin.id,
-      content: "Это тестовое сообщение в групповом чате",
     },
   });
   await prisma.message.upsert({

@@ -22,16 +22,16 @@ export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const { data: me } = useSWR<IMe>(`/me`, (url) => getMe(url), {
-    revalidateOnFocus: true,
-    refreshInterval: 3000,
+    revalidateOnReconnect: true,
+    refreshInterval: 2000,
   });
 
   const { data: chatList } = useSWR<IChatListItem[]>(
     `/chats`,
     (url) => getChats(url),
     {
-      revalidateOnFocus: true,
-      refreshInterval: 3000,
+      revalidateOnReconnect: true,
+      refreshInterval: 1000,
     },
   );
 

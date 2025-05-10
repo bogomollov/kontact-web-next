@@ -27,10 +27,7 @@ export const RegisterFormSchema = z.object({
     .string()
     .min(2, { message: "Минимальная длина фамилии 2 символа" })
     .trim(),
-  middleName: z
-    .string()
-    .min(2, { message: "Минимальная длина отчества 2 символа" })
-    .trim(),
+  middleName: z.string().trim().optional(),
   email: z.string().email({ message: "Неправильный формат почты" }).trim(),
   username: z
     .string()

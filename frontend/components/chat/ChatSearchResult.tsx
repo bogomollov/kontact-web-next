@@ -2,7 +2,6 @@
 import React from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import imageLoader from "@/lib/imageLoader";
 import { IChatSearchListItem } from "@/types";
 import { apiFetch } from "@/lib/apiFetch";
 import ChatAvatar from "../ui/ChatAvatar";

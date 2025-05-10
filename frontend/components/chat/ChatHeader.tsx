@@ -7,14 +7,18 @@ export default function ChatHeader({ chat }: { chat: IChat }) {
       <div className="flex items-center justify-center gap-[15px]">
         <div className="relative">
           <ChatAvatar chat_id={chat.id} chat_image={chat.image} />
-          {!chat.membersCount && (
+          {chat.is_online && (
             <div className="absolute right-0 bottom-0 h-[14px] w-[14px] rounded-full border-2 border-white bg-blue-500"></div>
           )}
         </div>
         <div className="flex flex-col">
           <h4>{chat.name}</h4>
           <p className="text-base text-neutral-500">
-            {chat.membersCount ? `${chat.membersCount} участника` : "в сети"}
+            {chat.type === "private"
+              ? chat.is_online
+                ? "в сети"
+                : "не в сети"
+              : `${chat.membersCount} участников`}
           </p>
         </div>
       </div>

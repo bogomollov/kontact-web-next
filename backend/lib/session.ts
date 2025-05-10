@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { JWTPayload, jwtVerify, SignJWT } from "jose";
 
 const key = process.env.ACCESS_SECRET;
-const node_env = process.env.NODE_ENV;
 const encodedAccessKey = new TextEncoder().encode(key);
 const AccessExpiresAt = new Date(Date.now() + 1 * 24 * 60 * 60 * 3000);
 
@@ -42,9 +41,8 @@ export async function createSession(
   const session = await encrypt({ id: payload.id });
   res.cookie("session", session, {
     httpOnly: true,
-    secure: node_env == "production",
     expires: AccessExpiresAt,
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
   });
 }
