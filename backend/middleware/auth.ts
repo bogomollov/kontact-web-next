@@ -2,9 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { decrypt, SessionPayload } from "../lib/session";
 import { createClient } from "redis";
 
-const REDIS_HOST = process.env.REDIS_HOST;
-const REDIS_PORT = process.env.REDIS_PORT;
-
 declare global {
   namespace Express {
     interface Request {
@@ -31,7 +28,9 @@ export async function isAuth(req: Request, res: Response, next: NextFunction) {
     }
     req.token = payload;
 
-    const redis = await createClient()
+    const redis = await createClient({
+      url: "redis://@127.0.0.1",
+    })
       .on("error", (error) =>
         console.error("Ошибка при подключении к Redis:", error)
       )
@@ -42,6 +41,7 @@ export async function isAuth(req: Request, res: Response, next: NextFunction) {
     });
 
     await redis.quit();
+
     next();
   } catch (error) {
     res.status(403).json({ message: "Доступ запрещен: ошибка токена" });

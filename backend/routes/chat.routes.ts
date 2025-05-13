@@ -33,7 +33,9 @@ router.get("/", isAuth, async (req: Request, res: Response) => {
       },
     });
 
-    const redis = await createClient()
+    const redis = await createClient({
+      url: "redis://@127.0.0.1",
+    })
       .on("error", (err) => console.log("Ошибка при подключении к Redis", err))
       .connect();
 
@@ -72,8 +74,9 @@ router.get("/", isAuth, async (req: Request, res: Response) => {
       })
     );
 
-    await redis.quit();
     res.json(data);
+    await redis.quit();
+    return;
   } catch (error) {
     console.error("Ошибка при получении данных о чатах:", error);
     res.status(500).json({ error: "Не удалось получить данные о чатах" });
@@ -125,7 +128,9 @@ router.get("/:id", isAuth, async (req: Request, res: Response) => {
       return;
     }
 
-    const redis = await createClient()
+    const redis = await createClient({
+      url: "redis://@127.0.0.1",
+    })
       .on("error", (err) => console.log("Ошибка при подключении к Redis", err))
       .connect();
 
@@ -155,6 +160,7 @@ router.get("/:id", isAuth, async (req: Request, res: Response) => {
     }
 
     res.json(data);
+    await redis.quit();
     return;
   } catch (e) {
     res.status(500).json({
