@@ -47,24 +47,24 @@ services:
     networks:
       - kontact-network
 
-  backend:
-    build:
-      context: .
-      dockerfile: ./backend/Dockerfile
-    hostname: backend
-    container_name: kontact-backend
-    restart: unless-stopped
-    ports:
-      - "3001:3001"
-    depends_on:
-      pgsql:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    networks:
-      - kontact-network
-    env_file:
-      - .env
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: ./backend/Dockerfile
+  #   hostname: backend
+  #   container_name: kontact-backend
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3001:3001"
+  #   depends_on:
+  #     pgsql:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_started
+  #   networks:
+  #     - kontact-network
+  #   env_file:
+  #     - .env
 
   # frontend:
   #   build:
