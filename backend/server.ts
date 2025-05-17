@@ -18,14 +18,9 @@ const app = express();
 const router = express.Router();
 const prisma = new PrismaClient();
 
-const origin =
-  process.env.NODE_ENV === "production"
-    ? [`${process.env.NEXT_PUBLIC_URL}`]
-    : ["http://localhost:3000"];
-
 app.use(
   cors({
-    origin: origin,
+    origin: true,
     allowedHeaders: "Content-Type, Authorization",
     credentials: true,
     optionsSuccessStatus: 200,

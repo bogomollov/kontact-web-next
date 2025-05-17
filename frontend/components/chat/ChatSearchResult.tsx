@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { IChatSearchListItem } from "@/types";
 import { apiFetch } from "@/lib/apiFetch";

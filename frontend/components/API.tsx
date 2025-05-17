@@ -11,7 +11,7 @@ export default function API() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await apiFetch("/chats/search?query=Виктор", {
+      const res = await apiFetch("/users/search?query=Виктор", {
         credentials: "include",
       });
       const data = await res.json();

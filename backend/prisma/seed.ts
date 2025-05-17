@@ -56,29 +56,6 @@ async function main() {
     },
   });
 
-  const user = await prisma.user.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      firstName: "Ксения",
-      lastName: "Соколова",
-      middleName: "Константиновна",
-      department_id: department.id,
-      position_id: position.id,
-    },
-  });
-  await prisma.account.upsert({
-    where: { username: "ksenia" },
-    update: {},
-    create: {
-      user_id: user.id,
-      username: "ksenia",
-      email: "user@mail.ru",
-      password: user_password,
-      role_id: role.id,
-    },
-  });
-
   const admin = await prisma.user.upsert({
     where: { id: 2 },
     update: {},
@@ -102,36 +79,12 @@ async function main() {
     },
   });
 
-  const chatPrivate = await prisma.chat.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      type: "private",
-    },
-  });
   const chatGroup = await prisma.chat.upsert({
     where: { id: 2 },
     update: {},
     create: {
       type: "group",
       name: "Общая группа",
-    },
-  });
-
-  await prisma.chatMember.upsert({
-    where: { chat_id_user_id: { chat_id: chatPrivate.id, user_id: user.id } },
-    update: {},
-    create: {
-      chat_id: chatPrivate.id,
-      user_id: user.id,
-    },
-  });
-  await prisma.chatMember.upsert({
-    where: { chat_id_user_id: { chat_id: chatPrivate.id, user_id: admin.id } },
-    update: {},
-    create: {
-      chat_id: chatPrivate.id,
-      user_id: admin.id,
     },
   });
 
@@ -146,28 +99,11 @@ async function main() {
   });
 
   await prisma.chatMember.upsert({
-    where: { chat_id_user_id: { chat_id: chatGroup.id, user_id: user.id } },
-    update: {},
-    create: {
-      chat_id: chatGroup.id,
-      user_id: user.id,
-    },
-  });
-  await prisma.chatMember.upsert({
     where: { chat_id_user_id: { chat_id: chatGroup.id, user_id: admin.id } },
     update: {},
     create: {
       chat_id: chatGroup.id,
       user_id: admin.id,
-    },
-  });
-  await prisma.message.upsert({
-    where: { id: 2 },
-    update: {},
-    create: {
-      chat_id: chatPrivate.id,
-      sender_id: admin.id,
-      content: "Это тестовое сообщение в личном чате",
     },
   });
 }
