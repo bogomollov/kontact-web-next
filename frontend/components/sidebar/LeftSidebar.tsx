@@ -46,7 +46,7 @@ export function LeftSidebar({
 
   return (
     <>
-      <div className="flex flex-col gap-[15px]">
+      <div className="flex h-full flex-col gap-[15px]">
         <div className="flex flex-col gap-[25px] border-b border-b-neutral-200">
           <div className="flex items-center justify-between gap-[20px] px-[20px] pt-[20px]">
             <div className="flex items-center justify-center gap-[15px]">
@@ -124,7 +124,7 @@ export function LeftSidebar({
           </div>
           <div className="flex flex-col px-[20px] pb-[5px]"></div>
         </div>
-        <div className="flex flex-col gap-[8px] px-[20px]">
+        <div className="flex flex-col gap-[8px] overflow-y-auto px-[20px] pb-[30px]">
           {isSearching ? (
             <>
               {searchResults && searchResults.length > 0 ? (

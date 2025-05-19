@@ -3,29 +3,32 @@ import Input from "../ui/Input";
 import InputLabel from "../ui/InputLabel";
 import Button from "../ui/Button";
 import InputError from "../ui/InputError";
-import { FormErrors, FormState, IMe } from "@/types";
+import { FormErrors, FormState, IDepartment, IMe, IPosition } from "@/types";
 import imageLoader from "@/lib/imageLoader";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/apiFetch";
 import Image from "next/image";
+import Select from "../ui/Select";
 
 interface FormData {
   firstName: string;
   lastName: string;
   middleName?: string | undefined;
+  position_id: number;
+  department_id: number;
   image: string | undefined;
   newImage: File | null;
 }
 
 export default function UpdateUserForm({
   authUser,
-  department,
-  position,
+  departments,
+  positions,
 }: {
   authUser: IMe;
-  department?: string;
-  position?: string;
+  departments: IDepartment[];
+  positions: IPosition[];
 }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -34,6 +37,8 @@ export default function UpdateUserForm({
     firstName: authUser.user.firstName,
     lastName: authUser.user.lastName,
     middleName: authUser.user.middleName || undefined,
+    department_id: authUser.user.department_id,
+    position_id: authUser.user.position_id,
     image: authUser.image,
     newImage: null,
   });
@@ -41,11 +46,16 @@ export default function UpdateUserForm({
   const [errors, setErrors] = useState<FormErrors>(undefined);
   const [message, setMessage] = useState<string | undefined>(undefined);
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: Number(value) });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormData({ ...formData, newImage: file });
@@ -59,8 +69,8 @@ export default function UpdateUserForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors(undefined);
-    setPending(true);
     setMessage(undefined);
+    setPending(true);
 
     const data = new FormData();
     data.append("firstName", formData.firstName);
@@ -68,7 +78,12 @@ export default function UpdateUserForm({
     if (formData.middleName) {
       data.append("middleName", formData.middleName);
     }
-
+    if (formData.department_id) {
+      data.append("department_id", `${formData.department_id}`);
+    }
+    if (formData.position_id) {
+      data.append("position_id", `${formData.position_id}`);
+    }
     if (formData.newImage) {
       data.append("image", formData.newImage);
     }
@@ -79,9 +94,7 @@ export default function UpdateUserForm({
         body: data,
         credentials: "include",
       });
-
       const responseData: FormState = await response.json();
-
       if (response.ok) {
         router.refresh();
       }
@@ -141,6 +154,7 @@ export default function UpdateUserForm({
           onChange={handleChange}
           value={formData.firstName}
           className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
+          required
         />
         <InputError message={errors?.firstName} />
       </div>
@@ -153,6 +167,7 @@ export default function UpdateUserForm({
           onChange={handleChange}
           value={formData.lastName}
           className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
+          required
         />
         <InputError message={errors?.lastName} />
       </div>
@@ -170,18 +185,28 @@ export default function UpdateUserForm({
       </div>
       <div className="flex flex-col gap-[8px]">
         <InputLabel>Сфера деятельности</InputLabel>
-        <Input
-          defaultValue={department}
+        <Select
+          name="department_id"
+          value={formData.department_id}
+          options={
+            departments?.map((d) => ({ value: d.id, label: d.name })) || []
+          }
           className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
-          disabled
+          onChange={handleSelectChange}
+          required
         />
       </div>
       <div className="flex flex-col gap-[8px]">
         <InputLabel>Должность</InputLabel>
-        <Input
-          defaultValue={position}
+        <Select
+          name="position_id"
+          value={formData.position_id}
+          options={
+            positions?.map((p) => ({ value: p.id, label: p.name })) || []
+          }
           className="inline-flex w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
-          disabled
+          onChange={handleSelectChange}
+          required
         />
       </div>
       <Button

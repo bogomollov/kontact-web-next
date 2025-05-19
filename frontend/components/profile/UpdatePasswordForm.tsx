@@ -46,12 +46,16 @@ export default function UpdatePasswordForm({ authUser }: { authUser: IMe }) {
       });
 
       const responseData: FormState = await response.json();
-
       if (response.ok) {
+        setFormData({
+          password: "",
+          newPassword: "",
+          repeatPassword: "",
+        });
         router.refresh();
       }
-      if (responseData?.errors) {
-        setErrors(responseData.errors);
+      if (responseData?.message && !response.ok) {
+        setMessage(responseData.message);
       }
     } catch {
       setMessage("Ошибка при подключении к серверу");
@@ -77,6 +81,7 @@ export default function UpdatePasswordForm({ authUser }: { authUser: IMe }) {
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Введите существующий пароль"
             onChange={handleChange}
+            required
           />
           <InputError message={errors?.currentPassword} />
         </div>
@@ -89,6 +94,7 @@ export default function UpdatePasswordForm({ authUser }: { authUser: IMe }) {
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Придумайте безопасный пароль"
             onChange={handleChange}
+            required
           />
           <InputError message={errors?.newPassword} />
         </div>
@@ -101,6 +107,7 @@ export default function UpdatePasswordForm({ authUser }: { authUser: IMe }) {
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Повторите новый пароль"
             onChange={handleChange}
+            required
           />
           <InputError message={errors?.repeatPassword} />
         </div>

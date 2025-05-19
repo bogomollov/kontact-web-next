@@ -23,7 +23,7 @@ export default function Table({
   body_response,
 }: TableProps) {
   return (
-    <div className="flex max-w-[666px] flex-col rounded-md border">
+    <div className="flex flex-col rounded-md border">
       <div className="flex items-center gap-2 border-b p-3">
         <Button className="rounded-md bg-blue-500 text-white disabled:bg-blue-500/80">
           {method}

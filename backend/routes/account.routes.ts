@@ -83,9 +83,9 @@ router.patch("/:id", isAuth, async (req: Request, res: Response) => {
       where: { id: Number(pathId) },
       data: updateData,
     });
-    res
-      .status(200)
-      .json({ message: "Аккаунт обновлен", account: updatedAccount });
+
+    res.json({ message: "Аккаунт обновлен", account: updatedAccount });
+    return;
   } catch (error) {
     console.error("Ошибка обновления аккаунта:", error);
     res.status(500).json({ message: "Ошибка сервера" });

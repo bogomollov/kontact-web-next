@@ -23,6 +23,7 @@ export function UserSearchResult({ user }: UserSearchResultProps) {
           headers: {
             "Content-Type": "application/json",
           },
+          cache: "no-store",
           credentials: "include",
           body: JSON.stringify({ user_id: user.id }),
         });

@@ -1,6 +1,18 @@
 import { IChat } from "@/types";
 import ChatAvatar from "../ui/ChatAvatar";
 
+function declensionWord(count: number): string {
+  const rules = new Intl.PluralRules("ru-RU");
+  const current = rules.select(count);
+  const words: Record<string, string> = {
+    one: "участник",
+    few: "участника",
+    many: "участников",
+  };
+
+  return words[current] || "участников";
+}
+
 export default function ChatHeader({ chat }: { chat: IChat }) {
   return (
     <div className="flex items-center justify-between gap-[20px] border-b border-b-neutral-200 px-[20px] py-[20px]">
@@ -18,7 +30,7 @@ export default function ChatHeader({ chat }: { chat: IChat }) {
               ? chat.is_online
                 ? "в сети"
                 : "не в сети"
-              : `${chat.membersCount} участников`}
+              : `${chat.membersCount} ${declensionWord(Number(chat.membersCount))}`}
           </p>
         </div>
       </div>
