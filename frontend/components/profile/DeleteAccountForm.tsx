@@ -1,5 +1,5 @@
 "use client";
-import { IMe } from "@/types";
+import { FormState, IMe } from "@/types";
 import Button from "../ui/Button";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/apiFetch";
@@ -8,6 +8,7 @@ import { useState } from "react";
 export default function DeleteAccountForm({ authUser }: { authUser: IMe }) {
   const router = useRouter();
   const [pending, setPending] = useState<boolean>(false);
+  const [message, setMessage] = useState<string | undefined>(undefined);
 
   const handleClick = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,9 +22,13 @@ export default function DeleteAccountForm({ authUser }: { authUser: IMe }) {
         },
         credentials: "include",
       });
+      const responseData: FormState = await response.json();
 
       if (response.ok) {
         router.refresh();
+      }
+      if (responseData && !response.ok) {
+        setMessage(responseData.message);
       }
     } catch (error) {
       setPending(false);

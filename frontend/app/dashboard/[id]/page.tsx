@@ -28,30 +28,27 @@ export default function Chat({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
 
   useSWR(`/chats/${id}/messages/read`, readMessages, {
-    revalidateOnMount: true,
     revalidateOnFocus: true,
     revalidateOnReconnect: true,
-    refreshWhenHidden: true,
-    refreshWhenOffline: true,
-    refreshInterval: 1000,
+    refreshInterval: 800,
   });
 
   const {
     data: me,
     isLoading: isMeLoading,
     error: meError,
-  } = useSWR<IMe>("/me", getMe, { revalidateOnFocus: false });
+  } = useSWR<IMe>("/me", getMe, {
+    revalidateOnReconnect: true,
+    revalidateOnFocus: true,
+  });
 
   const {
     data: chat,
     isLoading: isChatLoading,
     error: chatError,
   } = useSWR<IChat>(`/chats/${id}`, getChatId, {
-    revalidateOnMount: true,
-    revalidateOnFocus: true,
     revalidateOnReconnect: true,
-    refreshWhenHidden: true,
-    refreshWhenOffline: true,
+    revalidateOnFocus: true,
     refreshInterval: 1000,
   });
 

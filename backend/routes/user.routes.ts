@@ -30,10 +30,18 @@ router.patch("/:id", isAuth, upload, async (req: Request, res: Response) => {
     return;
   }
 
-  const { firstName, lastName, middleName } = req.body;
+  const { firstName, lastName, middleName, department_id, position_id } =
+    req.body;
   const imageFile = req.file as Express.Multer.File | undefined;
 
-  if (!firstName && !lastName && !middleName && !imageFile) {
+  if (
+    !firstName &&
+    !lastName &&
+    !middleName &&
+    !department_id &&
+    !position_id &&
+    !imageFile
+  ) {
     res
       .status(409)
       .json({ message: "Укажите хотя бы одно поле для обновления" });
@@ -52,6 +60,8 @@ router.patch("/:id", isAuth, upload, async (req: Request, res: Response) => {
     if (firstName) updateData.firstName = firstName;
     if (lastName) updateData.lastName = lastName;
     if (middleName) updateData.middleName = middleName;
+    if (department_id) updateData.department_id = Number(department_id);
+    if (position_id) updateData.position_id = Number(position_id);
     if (imageFile) {
       const input = path.join(__dirname, "../static/users", imageFile.filename);
       const newFilename = `${req.token?.id}.png`;
@@ -66,6 +76,7 @@ router.patch("/:id", isAuth, upload, async (req: Request, res: Response) => {
       data: updateData,
     });
     res.status(200).json({ message: "Профиль обновлен", user: updatedUser });
+    return;
   } catch (error) {
     console.error("Ошибка обновления профиля:", error);
     res.status(500).json({ message: "Ошибка сервера" });
@@ -79,6 +90,22 @@ router.get("/search", isAuth, async (req: Request, res: Response) => {
 
     if (!query || !currentUserId) {
       res.json([]);
+      return;
+    }
+
+    const currentUserFind = await prisma.user.findFirst({
+      where: {
+        id: currentUserId,
+        OR: [
+          { firstName: { startsWith: query, mode: "insensitive" } },
+          { lastName: { startsWith: query, mode: "insensitive" } },
+          { middleName: { startsWith: query, mode: "insensitive" } },
+        ],
+      },
+    });
+
+    if (currentUserFind) {
+      res.status(400).json({ message: "Вы не можете искать самого себя" });
       return;
     }
 

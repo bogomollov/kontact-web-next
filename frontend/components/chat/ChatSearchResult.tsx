@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { IChatSearchListItem } from "@/types";
 import { apiFetch } from "@/lib/apiFetch";
@@ -24,6 +23,7 @@ export function UserSearchResult({ user }: UserSearchResultProps) {
           headers: {
             "Content-Type": "application/json",
           },
+          cache: "no-store",
           credentials: "include",
           body: JSON.stringify({ user_id: user.id }),
         });

@@ -39,7 +39,7 @@ router.post("/register", async (req: Request, res: Response) => {
     const salt = genSaltSync(12);
     const passwordHash = hashSync(password, salt);
 
-    const [newUser, account] = await prisma.$transaction(async (tx) => {
+    const { newUser, account } = await prisma.$transaction(async (tx) => {
       const createdUser = await tx.user.create({
         data: {
           firstName,
@@ -60,19 +60,14 @@ router.post("/register", async (req: Request, res: Response) => {
         },
       });
 
-      return [createdUser, createdAccount];
-    });
+      await tx.chatMember.create({
+        data: {
+          chat_id: 1,
+          user_id: createdUser.id,
+        },
+      });
 
-    await prisma.account.update({
-      where: { id: account.id },
-      data: { user_id: newUser.id },
-    });
-
-    await prisma.chatMember.create({
-      data: {
-        chat_id: 2,
-        user_id: newUser.id,
-      },
+      return { newUser: createdUser, account: createdAccount };
     });
 
     await createSession(req, res, {
@@ -98,8 +93,9 @@ router.post("/register", async (req: Request, res: Response) => {
       res.status(400).json({ errors: fieldsErrors });
       return;
     }
-
-    res.status(500).json({ message: "Ошибка при регистрации" });
+    res.status(500).json({
+      message: "Ошибка при регистрации",
+    });
     return;
   }
 });

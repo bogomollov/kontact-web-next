@@ -7,6 +7,7 @@ import { LeftSidebar } from "@/components/sidebar/LeftSidebar";
 export async function getMe(url: string) {
   const res = await apiFetch(url, {
     credentials: "include",
+    cache: "no-store",
   });
   return res.json();
 }
@@ -14,6 +15,7 @@ export async function getMe(url: string) {
 async function getChats(url: string) {
   const res = await apiFetch(url, {
     credentials: "include",
+    cache: "no-store",
   });
   return res.json();
 }
@@ -23,7 +25,7 @@ export default function DashboardLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const { data: me } = useSWR<IMe>(`/me`, (url) => getMe(url), {
     revalidateOnReconnect: true,
-    refreshInterval: 2000,
+    revalidateOnFocus: true,
   });
 
   const { data: chatList } = useSWR<IChatListItem[]>(
@@ -31,7 +33,8 @@ export default function DashboardLayout({
     (url) => getChats(url),
     {
       revalidateOnReconnect: true,
-      refreshInterval: 1000,
+      revalidateOnFocus: true,
+      refreshInterval: 800,
     },
   );
 

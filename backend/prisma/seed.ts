@@ -6,16 +6,14 @@ const prisma = new PrismaClient();
 async function main() {
   const salt = genSaltSync(12);
   const admin_password = hashSync("admin", salt);
-  const user_password = hashSync("user", salt);
 
-  const role = await prisma.role.upsert({
+  await prisma.role.upsert({
     where: { name: "user" },
     update: {},
     create: {
       name: "user",
     },
   });
-
   const role2 = await prisma.role.upsert({
     where: { name: "admin" },
     update: {},
@@ -25,29 +23,70 @@ async function main() {
   });
 
   const department = await prisma.department.upsert({
-    where: { name: "Развитие цифровых технологий" },
+    where: { name: "Отдел развития цифровых технологий" },
     update: {},
     create: {
-      name: "Развитие цифровых технологий",
+      name: "Отдел развития цифровых технологий",
     },
   });
-
   const department2 = await prisma.department.upsert({
-    where: { name: "Организация работы и контроля" },
+    where: { name: "Отдел цифрового развития в финансово-экономической сфере" },
     update: {},
     create: {
-      name: "Организация работы и контроля",
+      name: "Отдел цифрового развития в финансово-экономической сфере",
+    },
+  });
+  const department3 = await prisma.department.upsert({
+    where: { name: "Отдел цифрового развития в социальной сфере" },
+    update: {},
+    create: {
+      name: "Отдел цифрового развития в социальной сфере",
+    },
+  });
+  const department4 = await prisma.department.upsert({
+    where: {
+      name: "Отдел цифрового развития в сфере государственного управления",
+    },
+    update: {},
+    create: {
+      name: "Отдел цифрового развития в сфере государственного управления",
+    },
+  });
+  const department5 = await prisma.department.upsert({
+    where: {
+      name: "Отдел цифрового развития местного самоуправления",
+    },
+    update: {},
+    create: {
+      name: "Отдел цифрового развития местного самоуправления",
+    },
+  });
+  const department6 = await prisma.department.upsert({
+    where: {
+      name: "Отдел геоинформационных систем",
+    },
+    update: {},
+    create: {
+      name: "Отдел геоинформационных систем",
+    },
+  });
+  const department7 = await prisma.department.upsert({
+    where: {
+      name: "Управление связи и коммуникаций",
+    },
+    update: {},
+    create: {
+      name: "Управление связи и коммуникаций",
     },
   });
 
   const position = await prisma.position.upsert({
-    where: { name: "Ведущий эксперт" },
+    where: { name: "Консультант" },
     update: {},
     create: {
-      name: "Ведущий эксперт",
+      name: "Консультант",
     },
   });
-
   const position2 = await prisma.position.upsert({
     where: { name: "Главный специалист" },
     update: {},
@@ -55,27 +94,39 @@ async function main() {
       name: "Главный специалист",
     },
   });
-
-  const user = await prisma.user.upsert({
-    where: { id: 1 },
+  const position3 = await prisma.position.upsert({
+    where: { name: "Старший специалист" },
     update: {},
     create: {
-      firstName: "Ксения",
-      lastName: "Соколова",
-      middleName: "Константиновна",
-      department_id: department.id,
-      position_id: position.id,
+      name: "Старший специалист",
     },
   });
-  await prisma.account.upsert({
-    where: { username: "ksenia" },
+  const position4 = await prisma.position.upsert({
+    where: { name: "Ведущий эксперт" },
     update: {},
     create: {
-      user_id: user.id,
-      username: "ksenia",
-      email: "user@mail.ru",
-      password: user_password,
-      role_id: role.id,
+      name: "Ведущий эксперт",
+    },
+  });
+  const position5 = await prisma.position.upsert({
+    where: { name: "Специалист 2 разряда" },
+    update: {},
+    create: {
+      name: "Специалист 2 разряда",
+    },
+  });
+  const position6 = await prisma.position.upsert({
+    where: { name: "Помощник министра" },
+    update: {},
+    create: {
+      name: "Помощник министра",
+    },
+  });
+  const position7 = await prisma.position.upsert({
+    where: { name: "Помощник министра" },
+    update: {},
+    create: {
+      name: "Помощник министра",
     },
   });
 
@@ -102,13 +153,6 @@ async function main() {
     },
   });
 
-  const chatPrivate = await prisma.chat.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      type: "private",
-    },
-  });
   const chatGroup = await prisma.chat.upsert({
     where: { id: 2 },
     update: {},
@@ -117,21 +161,100 @@ async function main() {
       name: "Общая группа",
     },
   });
-
-  await prisma.chatMember.upsert({
-    where: { chat_id_user_id: { chat_id: chatPrivate.id, user_id: user.id } },
+  const chatGroup2 = await prisma.chat.upsert({
+    where: { id: 2 },
     update: {},
     create: {
-      chat_id: chatPrivate.id,
-      user_id: user.id,
+      type: "group",
+      name: "Отдел развития цифровых технологий",
     },
   });
-  await prisma.chatMember.upsert({
-    where: { chat_id_user_id: { chat_id: chatPrivate.id, user_id: admin.id } },
+  const chatGroup3 = await prisma.chat.upsert({
+    where: { id: 3 },
     update: {},
     create: {
-      chat_id: chatPrivate.id,
-      user_id: admin.id,
+      type: "group",
+      name: "Отдел цифрового развития в финансово-экономической сфере",
+    },
+  });
+  const chatGroup4 = await prisma.chat.upsert({
+    where: { id: 4 },
+    update: {},
+    create: {
+      type: "group",
+      name: "Отдел цифрового развития в социальной сфере",
+    },
+  });
+  const chatGroup5 = await prisma.chat.upsert({
+    where: { id: 5 },
+    update: {},
+    create: {
+      type: "group",
+      name: "Отдел цифрового развития в сфере государственного управления",
+    },
+  });
+  const chatGroup6 = await prisma.chat.upsert({
+    where: { id: 6 },
+    update: {},
+    create: {
+      type: "group",
+      name: "Отдел цифрового развития местного самоуправления",
+    },
+  });
+  const chatGroup7 = await prisma.chat.upsert({
+    where: { id: 7 },
+    update: {},
+    create: {
+      type: "group",
+      name: "Отдел геоинформационных систем",
+    },
+  });
+  const chatGroup8 = await prisma.chat.upsert({
+    where: { id: 7 },
+    update: {},
+    create: {
+      type: "group",
+      name: "Управление связи и коммуникаций",
+    },
+  });
+  const chatGroup9 = await prisma.chat.upsert({
+    where: { id: 8 },
+    update: {},
+    create: {
+      type: "group",
+      name: "Отдел планирования, финансирования и государственного заказа",
+    },
+  });
+  const chatGroup10 = await prisma.chat.upsert({
+    where: { id: 9 },
+    update: {},
+    create: {
+      type: "group",
+      name: "Отдел правовой, кадровой и антикоррупционной работы",
+    },
+  });
+  const chatGroup11 = await prisma.chat.upsert({
+    where: { id: 10 },
+    update: {},
+    create: {
+      type: "group",
+      name: "Организация работы и контроля",
+    },
+  });
+  const chatGroup12 = await prisma.chat.upsert({
+    where: { id: 11 },
+    update: {},
+    create: {
+      type: "group",
+      name: "Управление информационной безопасности",
+    },
+  });
+  const chatGroup13 = await prisma.chat.upsert({
+    where: { id: 12 },
+    update: {},
+    create: {
+      type: "group",
+      name: "Управление проектной деятельности",
     },
   });
 
@@ -144,15 +267,127 @@ async function main() {
       content: "Это тестовое сообщение в общей группе",
     },
   });
-
-  await prisma.chatMember.upsert({
-    where: { chat_id_user_id: { chat_id: chatGroup.id, user_id: user.id } },
+  await prisma.message.upsert({
+    where: { id: 2 },
     update: {},
     create: {
-      chat_id: chatGroup.id,
-      user_id: user.id,
+      chat_id: chatGroup2.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Отдел развития цифровых технологий"',
     },
   });
+  await prisma.message.upsert({
+    where: { id: 3 },
+    update: {},
+    create: {
+      chat_id: chatGroup3.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Отдел цифрового развития в финансово-экономической сфере"',
+    },
+  });
+  await prisma.message.upsert({
+    where: { id: 4 },
+    update: {},
+    create: {
+      chat_id: chatGroup4.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Отдел цифрового развития в социальной сфере"',
+    },
+  });
+  await prisma.message.upsert({
+    where: { id: 5 },
+    update: {},
+    create: {
+      chat_id: chatGroup5.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Отдел цифрового развития в сфере государственного управления"',
+    },
+  });
+  await prisma.message.upsert({
+    where: { id: 6 },
+    update: {},
+    create: {
+      chat_id: chatGroup6.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Отдел цифрового развития местного самоуправления"',
+    },
+  });
+  await prisma.message.upsert({
+    where: { id: 7 },
+    update: {},
+    create: {
+      chat_id: chatGroup7.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Отдел геоинформационных систем"',
+    },
+  });
+  await prisma.message.upsert({
+    where: { id: 8 },
+    update: {},
+    create: {
+      chat_id: chatGroup8.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Управление связи и коммуникаций"',
+    },
+  });
+  await prisma.message.upsert({
+    where: { id: 9 },
+    update: {},
+    create: {
+      chat_id: chatGroup9.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Отдел планирования, финансирования и государственного заказа"',
+    },
+  });
+  await prisma.message.upsert({
+    where: { id: 10 },
+    update: {},
+    create: {
+      chat_id: chatGroup10.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Отдел правовой, кадровой и антикоррупционной работы"',
+    },
+  });
+  await prisma.message.upsert({
+    where: { id: 11 },
+    update: {},
+    create: {
+      chat_id: chatGroup11.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Отдел организации работы и контроля"',
+    },
+  });
+  await prisma.message.upsert({
+    where: { id: 12 },
+    update: {},
+    create: {
+      chat_id: chatGroup12.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Управление информационной безопасности"',
+    },
+  });
+  await prisma.message.upsert({
+    where: { id: 13 },
+    update: {},
+    create: {
+      chat_id: chatGroup13.id,
+      sender_id: admin.id,
+      content:
+        'Это тестовое сообщение в группе "Управление проектной деятельности"',
+    },
+  });
+
   await prisma.chatMember.upsert({
     where: { chat_id_user_id: { chat_id: chatGroup.id, user_id: admin.id } },
     update: {},
@@ -161,13 +396,100 @@ async function main() {
       user_id: admin.id,
     },
   });
-  await prisma.message.upsert({
-    where: { id: 2 },
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup2.id, user_id: admin.id } },
     update: {},
     create: {
-      chat_id: chatPrivate.id,
-      sender_id: admin.id,
-      content: "Это тестовое сообщение в личном чате",
+      chat_id: chatGroup2.id,
+      user_id: admin.id,
+    },
+  });
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup3.id, user_id: admin.id } },
+    update: {},
+    create: {
+      chat_id: chatGroup3.id,
+      user_id: admin.id,
+    },
+  });
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup4.id, user_id: admin.id } },
+    update: {},
+    create: {
+      chat_id: chatGroup4.id,
+      user_id: admin.id,
+    },
+  });
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup5.id, user_id: admin.id } },
+    update: {},
+    create: {
+      chat_id: chatGroup5.id,
+      user_id: admin.id,
+    },
+  });
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup6.id, user_id: admin.id } },
+    update: {},
+    create: {
+      chat_id: chatGroup6.id,
+      user_id: admin.id,
+    },
+  });
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup7.id, user_id: admin.id } },
+    update: {},
+    create: {
+      chat_id: chatGroup7.id,
+      user_id: admin.id,
+    },
+  });
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup8.id, user_id: admin.id } },
+    update: {},
+    create: {
+      chat_id: chatGroup8.id,
+      user_id: admin.id,
+    },
+  });
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup9.id, user_id: admin.id } },
+    update: {},
+    create: {
+      chat_id: chatGroup9.id,
+      user_id: admin.id,
+    },
+  });
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup10.id, user_id: admin.id } },
+    update: {},
+    create: {
+      chat_id: chatGroup10.id,
+      user_id: admin.id,
+    },
+  });
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup11.id, user_id: admin.id } },
+    update: {},
+    create: {
+      chat_id: chatGroup11.id,
+      user_id: admin.id,
+    },
+  });
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup12.id, user_id: admin.id } },
+    update: {},
+    create: {
+      chat_id: chatGroup12.id,
+      user_id: admin.id,
+    },
+  });
+  await prisma.chatMember.upsert({
+    where: { chat_id_user_id: { chat_id: chatGroup13.id, user_id: admin.id } },
+    update: {},
+    create: {
+      chat_id: chatGroup13.id,
+      user_id: admin.id,
     },
   });
 }

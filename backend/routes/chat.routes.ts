@@ -31,6 +31,9 @@ router.get("/", isAuth, async (req: Request, res: Response) => {
           },
         },
       },
+      orderBy: {
+        updatedAt: "desc",
+      },
     });
 
     const redis = await createClient({

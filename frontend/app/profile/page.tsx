@@ -27,7 +27,7 @@ export default async function Profile() {
   const me: IMe = await meData.json();
 
   const departmentData = await apiFetch("/departments", {
-    cache: "force-cache",
+    cache: "no-store",
     headers: {
       Authorization: `Bearer ${session}`,
     },
@@ -36,7 +36,7 @@ export default async function Profile() {
   const departments: IDepartment[] = await departmentData.json();
 
   const positionData = await apiFetch("/positions", {
-    cache: "force-cache",
+    cache: "no-store",
     headers: {
       Authorization: `Bearer ${session}`,
     },
@@ -44,8 +44,7 @@ export default async function Profile() {
   });
   const positions: IPosition[] = await positionData.json();
 
-  if (!me) return null;
-
+  if (!me || !departments || !positions) return null;
   const isAdmin = me.role_id === 2;
 
   return (
@@ -101,10 +100,8 @@ export default async function Profile() {
       <div className="mt-6 grid w-full max-w-sm gap-7 md:grid-cols-1">
         <UpdateUserForm
           authUser={me}
-          department={
-            departments.find((d) => d.id === me.user.department_id)?.name
-          }
-          position={positions.find((p) => p.id === me.user.position_id)?.name}
+          departments={departments}
+          positions={positions}
         />
         <UpdateAccountForm authUser={me} />
         <UpdatePasswordForm authUser={me} />

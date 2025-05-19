@@ -46,7 +46,6 @@ export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
       });
 
       const responseData: FormState = await response.json();
-
       if (response.ok) {
         router.refresh();
       }
@@ -77,6 +76,7 @@ export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
             placeholder="Отображаемое имя"
             value={formData.username}
             onChange={handleChange}
+            required
           />
           <InputError message={errors?.username} />
         </div>
@@ -89,6 +89,7 @@ export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
             placeholder="Электронная почта"
             value={formData.email}
             onChange={handleChange}
+            required
           />
           <InputError message={errors?.email} />
         </div>
@@ -99,6 +100,7 @@ export default function UpdateAccountForm({ authUser }: { authUser: IMe }) {
             name="phone"
             className="w-full rounded-[10px] border px-[14px] py-[10px] focus:outline-blue-500"
             placeholder="Номер телефона"
+            maxLength={12}
             value={formData.phone}
             onChange={handleChange}
           />
