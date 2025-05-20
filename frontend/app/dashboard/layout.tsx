@@ -42,7 +42,7 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen">
-      <div className="flex w-full max-w-[400px] flex-col border-r border-r-neutral-200">
+      <div className="flex w-auto max-w-[400px] flex-col border-r border-r-neutral-200">
         <LeftSidebar authUser={me} allchats={chatList} />
       </div>
       {children}

@@ -1,9 +1,19 @@
 import express, { Request, Response } from "express";
 import { PrismaClient } from "../generated/prisma/client";
-import { isAuth } from "../middleware/auth";
+import { isAuth, isAdmin } from "../middleware/auth";
 
 const prisma = new PrismaClient();
 const router = express.Router();
+
+router.get("/", isAdmin, async (req: Request, res: Response) => {
+  try {
+    const data = await prisma.message.findMany();
+    res.json(data);
+  } catch (error) {
+    console.error("Ошибка при получении всех сообщений:", error);
+    res.status(500).json({ message: "Ошибка при получении всех сообщений" });
+  }
+});
 
 router.post("/", isAuth, async (req: Request, res: Response) => {
   const { chat_id, content } = req.body;
