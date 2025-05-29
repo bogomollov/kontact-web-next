@@ -210,7 +210,7 @@ async function main() {
     },
   });
   const chatGroup8 = await prisma.chat.upsert({
-    where: { id: 7 },
+    where: { id: 8 },
     update: {},
     create: {
       type: "group",
@@ -218,7 +218,7 @@ async function main() {
     },
   });
   const chatGroup9 = await prisma.chat.upsert({
-    where: { id: 8 },
+    where: { id: 9 },
     update: {},
     create: {
       type: "group",
@@ -226,7 +226,7 @@ async function main() {
     },
   });
   const chatGroup10 = await prisma.chat.upsert({
-    where: { id: 9 },
+    where: { id: 10 },
     update: {},
     create: {
       type: "group",
@@ -234,7 +234,7 @@ async function main() {
     },
   });
   const chatGroup11 = await prisma.chat.upsert({
-    where: { id: 10 },
+    where: { id: 11 },
     update: {},
     create: {
       type: "group",
@@ -242,7 +242,7 @@ async function main() {
     },
   });
   const chatGroup12 = await prisma.chat.upsert({
-    where: { id: 11 },
+    where: { id: 12 },
     update: {},
     create: {
       type: "group",
@@ -250,7 +250,7 @@ async function main() {
     },
   });
   const chatGroup13 = await prisma.chat.upsert({
-    where: { id: 12 },
+    where: { id: 13 },
     update: {},
     create: {
       type: "group",

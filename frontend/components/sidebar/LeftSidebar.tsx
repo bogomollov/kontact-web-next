@@ -155,7 +155,14 @@ export function LeftSidebar({
                     <div className="flex flex-1 items-center justify-between">
                       <h5>{chat.name}</h5>
                       {chat.unreadCount > 0 && (
-                        <small className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-blue-500 text-white">
+                        <small
+                          className="flex items-center justify-center rounded-full bg-blue-500 text-white"
+                          style={{
+                            minWidth: "20px",
+                            padding: "0 5px",
+                            height: "20px",
+                          }}
+                        >
                           {chat.unreadCount}
                         </small>
                       )}

@@ -67,6 +67,83 @@ router.post("/register", async (req: Request, res: Response) => {
         },
       });
 
+      await tx.chatMember.create({
+        data: {
+          chat_id: 2,
+          user_id: createdUser.id,
+        },
+      });
+
+      await tx.chatMember.create({
+        data: {
+          chat_id: 3,
+          user_id: createdUser.id,
+        },
+      });
+
+      await tx.chatMember.create({
+        data: {
+          chat_id: 4,
+          user_id: createdUser.id,
+        },
+      });
+
+      await tx.chatMember.create({
+        data: {
+          chat_id: 5,
+          user_id: createdUser.id,
+        },
+      });
+
+      await tx.chatMember.create({
+        data: {
+          chat_id: 6,
+          user_id: createdUser.id,
+        },
+      });
+
+      await tx.chatMember.create({
+        data: {
+          chat_id: 7,
+          user_id: createdUser.id,
+        },
+      });
+
+      await tx.chatMember.create({
+        data: {
+          chat_id: 8,
+          user_id: createdUser.id,
+        },
+      });
+
+      await tx.chatMember.create({
+        data: {
+          chat_id: 9,
+          user_id: createdUser.id,
+        },
+      });
+
+      await tx.chatMember.create({
+        data: {
+          chat_id: 10,
+          user_id: createdUser.id,
+        },
+      });
+
+      await tx.chatMember.create({
+        data: {
+          chat_id: 11,
+          user_id: createdUser.id,
+        },
+      });
+
+      await tx.chatMember.create({
+        data: {
+          chat_id: 12,
+          user_id: createdUser.id,
+        },
+      });
+
       return { newUser: createdUser, account: createdAccount };
     });
 
