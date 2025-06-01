@@ -14,41 +14,55 @@ import messageRoutes from "./routes/message.routes";
 import { PrismaClient } from "./generated/prisma/client";
 import { isAuth } from "./middleware/auth";
 
+// Создание экземпляра Express
 const app = express();
+// Создание роутера
 const router = express.Router();
+// Инициализация Prisma клиента
 const prisma = new PrismaClient();
 
+// Настройка CORS
 app.use(
   cors({
-    origin: true,
-    allowedHeaders: "Content-Type, Authorization",
-    credentials: true,
-    optionsSuccessStatus: 200,
+    origin: true, // Разрешать запросы с любых источников
+    allowedHeaders: "Content-Type, Authorization", // Разрешенные заголовки
+    credentials: true, // Разрешать передачу учетных данных
+    optionsSuccessStatus: 200, // Статус для OPTIONS запросов
   })
 );
+
+// Подключение middleware для работы с куками
 app.use(cookieParser());
+// Подключение middleware для парсинга JSON в теле запроса
 app.use(express.json());
+// Подключение middleware для парсинга URL-encoded данных в теле запроса
 app.use(express.urlencoded({ extended: true }));
+
+// Настройка статической директории для обслуживания файлов
 app.use(
   "/static",
   express.static("static", {
+    // Кастомные заголовки для статических файлов
     setHeaders: async (res, req, stat) => {
       res.set("Cache-Control", "private, max-age=3600, no-cache");
     },
   })
 );
 
+// Логирующее middleware для вывода информации о запросах
 app.use(function (req, res, next) {
   console.log(req.method, decodeURIComponent(req.url), res.statusCode);
-  next();
+  next(); // Передача управления следующему middleware
 });
-app.use("/api", router);
-app.use("/api/users", userRoutes);
-app.use("/api/accounts", accountRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/chats", chatRoutes);
-app.use("/api/messages", messageRoutes);
-app.use("/api/auth", authRoutes);
+
+// Подключение роутеров для API
+app.use("/api", router); // Базовый маршрут API
+app.use("/api/users", userRoutes); // Маршруты для работы с пользователями
+app.use("/api/accounts", accountRoutes); // Маршруты для работы с аккаунтами
+app.use("/api/admin", adminRoutes); // Маршруты для административных функций
+app.use("/api/chats", chatRoutes); // Маршруты для работы с чатами
+app.use("/api/messages", messageRoutes); // Маршруты для работы с сообщениями
+app.use("/api/auth", authRoutes); // Маршруты для аутентификации
 
 router.get("/me", isAuth, async (req: Request, res: Response) => {
   try {
